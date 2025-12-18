@@ -5,7 +5,11 @@ using UnityEngine;
 
 public class Agent : MonoBehaviour
 {
+    [Header("符号")]
+    [Tooltip("符号的int表示")]
     public int mark;
+    [Tooltip("符号对应的GameObject")]
+    public GameObject markObj;
 
     [Header("随机选择概率")]
     public double epsilon = 0.1;
@@ -20,6 +24,12 @@ public class Agent : MonoBehaviour
     void Awake()
     {
         storedOutcome = new int[9];
+        EventBus.Subscribe<TrainingCompletedEvent>(OnTrainingCompleted);
+    }
+
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe<TrainingCompletedEvent>(OnTrainingCompleted);
     }
 
     public void Init()
@@ -27,9 +37,10 @@ public class Agent : MonoBehaviour
         System.Array.Clear(storedOutcome, 0, storedOutcome.Length);
     }
 
-    public int[] Move(int[] state)
+    public int[] Move(int[] state, out int pos)
     {
         int[] outcome = (int[])state.Clone();
+        pos = -1;
 
         // 所有能走的格子
         List<int> posAvailable = new List<int>();
@@ -45,27 +56,28 @@ public class Agent : MonoBehaviour
         // 有一定的概率做随机选择
         if (Random.value < epsilon)
         {
-            int pos = posAvailable[Random.Range(0, posAvailable.Count)];
-            outcome[pos] = mark;
+            pos = posAvailable[Random.Range(0, posAvailable.Count)];
         }
         else
         {
             // 做最优选择
             double optimalValue = double.NegativeInfinity;
 
-            foreach (int pos in posAvailable)
+            foreach (int p in posAvailable)
             {
                 int[] outcomeCandidate = (int[])state.Clone();
-                outcomeCandidate[pos] = mark;
+                outcomeCandidate[p] = mark;
                 double value = valueMatrix[outcomeCandidate];
 
                 if (value > optimalValue)
                 {
-                    outcome = outcomeCandidate;
+                    pos = p;
                     optimalValue = value;
                 }
             }
         }
+
+        outcome[pos] = mark;
 
         double error = valueMatrix[outcome] - valueMatrix[storedOutcome];
         valueMatrix[storedOutcome] += alpha * error;
@@ -73,6 +85,10 @@ public class Agent : MonoBehaviour
 
         return outcome;
     }
+
+    public int[] Move(int[] state) => Move(state, out _);
+
+    void OnTrainingCompleted(TrainingCompletedEvent _) => Init();
 }
 
 public class ValueMatrix

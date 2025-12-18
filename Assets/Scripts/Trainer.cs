@@ -97,7 +97,9 @@ public class Trainer : MonoBehaviour
         }
 
         Debug.Log("Training finished.");
-        agent1.Init();
-        agent2.Init();
+
+        EventBus.Publish(new TrainingCompletedEvent());
     }
 }
+
+public struct TrainingCompletedEvent { }
