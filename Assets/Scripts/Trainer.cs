@@ -4,43 +4,17 @@ using UnityEngine;
 
 public class Trainer : MonoBehaviour
 {
-    enum GameState
-    {
-        Player1Won,
-        Player2Won,
-        Draw,
-        NotDecided
-    }
-
     [SerializeField] Agent agent1;
     [SerializeField] Agent agent2;
     [SerializeField] int num_trials = 30000;
 
-    GameState Judge(int[] outcome, int mark)
-    {
-        int[][] lines = {
-            new[]{0,1,2}, new[]{3,4,5}, new[]{6,7,8},
-            new[]{0,3,6}, new[]{1,4,7}, new[]{2,5,8},
-            new[]{0,4,8}, new[]{2,4,6}
-        };
-
-        foreach (var line in lines)
-        {
-            if (outcome[line[0]] == mark &&
-                outcome[line[1]] == mark &&
-                outcome[line[2]] == mark)
-                return mark == agent1.mark ? GameState.Player1Won : GameState.Player2Won;
-        }
-
-        foreach (int v in outcome)
-            if (v == 0) return GameState.NotDecided;
-
-        return GameState.Draw;
-    }
+    Judger judger;
 
     // Start is called before the first frame update
     void Start()
     {
+        judger = GetComponent<Judger>();
+
         int[] winner = new int[num_trials];
 
         for (int i = 0; i < num_trials; ++i)
@@ -60,7 +34,7 @@ public class Trainer : MonoBehaviour
             while (gameState == GameState.NotDecided)
             {
                 int[] outcome = agent1.Move(state);
-                gameState = Judge(outcome, agent1.mark);
+                gameState = judger.Apply(outcome, agent1);
 
                 if (gameState == GameState.Player1Won)
                 {
@@ -70,7 +44,7 @@ public class Trainer : MonoBehaviour
                 else if (gameState == GameState.NotDecided)
                 {
                     state = agent2.Move(outcome);
-                    gameState = Judge(state, agent2.mark);
+                    gameState = judger.Apply(state, agent2);
 
                     if (gameState == GameState.Player2Won)
                     {

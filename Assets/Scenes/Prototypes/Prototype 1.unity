@@ -945,6 +945,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1107984410}
   - component: {fileID: 1107984409}
+  - component: {fileID: 1107984411}
   m_Layer: 0
   m_Name: Trainer
   m_TagString: Untagged
@@ -982,6 +983,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 150881251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1107984411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107984408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7735ea2c67eae2e499d75f557b658bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent1: {fileID: 1362755591}
+  agent2: {fileID: 1582958905}
 --- !u!1001 &1216865742
 PrefabInstance:
   m_ObjectHideFlags: 0
