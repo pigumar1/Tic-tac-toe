@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class BasicOutcomeCandidateGen : OutcomeCandidateGen
+public class OutcomeCandidateGen : MonoBehaviour
 {
-    public override List<(int[], int)> Apply(int[] state, int mark)
+    OutcomeDecorator outcomeDecorator;
+
+    private void Awake()
+    {
+        outcomeDecorator = GetComponent<OutcomeDecorator>();
+    }
+
+    public List<(int[], int)> Apply(int[] state, int mark)
     {
         List<(int[], int)> result = new List<(int[], int)>();
 
@@ -15,6 +21,8 @@ public class BasicOutcomeCandidateGen : OutcomeCandidateGen
             {
                 int[] outcomeCandidate = (int[])state.Clone();
                 outcomeCandidate[pos] = mark;
+                outcomeDecorator?.Apply(outcomeCandidate, mark);
+
                 result.Add((outcomeCandidate, pos));
             }
         }

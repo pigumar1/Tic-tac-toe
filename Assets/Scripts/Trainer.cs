@@ -8,33 +8,37 @@ public class Trainer : MonoBehaviour
     [SerializeField] Agent agent2;
     [SerializeField] int num_trials = 30000;
 
+    [Header("价值矩阵维度")]
+    [SerializeField] int[] valueMatrixShape;
+
+    [Header("初始状态")]
+    [SerializeField] int[] initState;
+
     Judger judger;
 
     // Start is called before the first frame update
     void Start()
     {
+        // agent 初始化
+        agent1.Init(valueMatrixShape);
+        agent2.Init(valueMatrixShape);
+
         judger = GetComponent<Judger>();
 
-        int[] winner = new int[num_trials];
+        //int[] winner = new int[num_trials];
 
         for (int i = 0; i < num_trials; ++i)
         {
-            if (i == 20000)
-            {
-                agent1.epsilon = 0;
-                agent2.epsilon = 0;
-            }
-
-            agent1.Init();
-            agent2.Init();
+            agent1.Clear();
+            agent2.Clear();
 
             GameState gameState = GameState.NotDecided;
-            int[] state = new int[9];
+            int[] state = (int[])initState.Clone();
 
             while (gameState == GameState.NotDecided)
             {
                 int[] outcome = agent1.Move(state);
-                gameState = judger.Apply(outcome, agent1);
+                gameState = judger.Apply(outcome);
 
                 if (gameState == GameState.Player1Won)
                 {
@@ -44,7 +48,7 @@ public class Trainer : MonoBehaviour
                 else if (gameState == GameState.NotDecided)
                 {
                     state = agent2.Move(outcome);
-                    gameState = judger.Apply(state, agent2);
+                    gameState = judger.Apply(state);
 
                     if (gameState == GameState.Player2Won)
                     {
@@ -54,7 +58,7 @@ public class Trainer : MonoBehaviour
                 }
             }
 
-            winner[i] = (int)gameState;
+            //winner[i] = (int)gameState;
 
             //if (i % 1000 == 0 && i > 0)
             //{

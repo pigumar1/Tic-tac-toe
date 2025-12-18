@@ -12,41 +12,33 @@ public class Agent : MonoBehaviour
     public GameObject markObj;
 
     [Header("随机选择概率")]
-    public double epsilon = 0.1;
+    [SerializeField] double epsilon = 0.1;
 
     [Header("学习率")]
     [SerializeField] double alpha = 0.1;
-
-    [Header("价值矩阵维度")]
-    [SerializeField] int[] valueMatrixShape;
 
     public ValueMatrix valueMatrix;
     int[] storedOutcome;
     OutcomeCandidateGen outcomeCandidateGen;
 
     // Start is called before the first frame update
-    void Awake()
+    void Awake() => EventBus.Subscribe<TrainingCompletedEvent>(OnTrainingCompleted);
+
+    private void OnDestroy() => EventBus.Unsubscribe<TrainingCompletedEvent>(OnTrainingCompleted);
+
+    public void Init(int[] valueMatrixShape)
     {
         valueMatrix = new ValueMatrix(valueMatrixShape);
         outcomeCandidateGen = GetComponent<OutcomeCandidateGen>();
-        EventBus.Subscribe<TrainingCompletedEvent>(OnTrainingCompleted);
     }
 
-    private void OnDestroy()
-    {
-        EventBus.Unsubscribe<TrainingCompletedEvent>(OnTrainingCompleted);
-    }
-
-    public void Init()
-    {
-        storedOutcome = null;
-    }
+    public void Clear() => storedOutcome = null;
 
     public int[] Move(int[] state, out int pos)
     {
         int[] outcome = (int[])state.Clone();
 
-        // 所有能走的格子
+        // 所有可能的结果
         List<(int[], int)> outcomeCandidates = outcomeCandidateGen.Apply(state, mark);
 
         // 有一定的概率做随机选择
@@ -85,7 +77,11 @@ public class Agent : MonoBehaviour
 
     public int[] Move(int[] state) => Move(state, out _);
 
-    void OnTrainingCompleted(TrainingCompletedEvent _) => Init();
+    void OnTrainingCompleted(TrainingCompletedEvent _)
+    {
+        epsilon = 0;
+        Clear();
+    }
 }
 
 public class ValueMatrix

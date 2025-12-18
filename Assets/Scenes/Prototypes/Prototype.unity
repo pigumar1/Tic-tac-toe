@@ -615,6 +615,7 @@ MonoBehaviour:
   agent1: {fileID: 1362755591}
   agent2: {fileID: 1582958905}
   num_trials: 30000
+  valueMatrixShape: 030000000300000003000000030000000300000003000000030000000300000003000000
 --- !u!4 &1107984410
 Transform:
   m_ObjectHideFlags: 0

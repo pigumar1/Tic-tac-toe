@@ -15,8 +15,15 @@ public class GameController : MonoBehaviour
     [Header("∆Â≈Ã")]
     [SerializeField] Transform grids;
     [SerializeField] GameObject playerMark;
+    [SerializeField] int[] initState;
+
+    [Header("µ˜ ‘")]
+    [SerializeField] int[] state;
+
+    #region Components
     EventTrigger[] gridTriggers;
-    int[] state;
+    OutcomeDecorator outcomeDecorator;
+    #endregion
 
     // Start is called before the first frame update
     private void Awake()
@@ -28,6 +35,8 @@ public class GameController : MonoBehaviour
         {
             gridTriggers[i] = grids.GetChild(i).GetComponent<EventTrigger>();
         }
+
+        outcomeDecorator = GetComponent<OutcomeDecorator>();
     }
 
     private void Start()
@@ -42,12 +51,23 @@ public class GameController : MonoBehaviour
 
     void OnTrainingCompleted(TrainingCompletedEvent _)
     {
-        state = new int[9];
+        state = (int[])initState.Clone();
     }
 
-    void PlaceMark(Agent agent, int pos)
+    //void PlaceMark(Agent agent, int pos)
+    //{
+    //    GameObject.Instantiate(agent.markObj, grids.GetChild(pos));
+    //}
+
+    void UpdateStateVisual()
     {
-        GameObject.Instantiate(agent.markObj, grids.GetChild(pos));
+        for (int pos = 0; pos < 9; ++pos)
+        {
+            Transform grid = grids.GetChild(pos);
+
+            grid.GetChild(0).gameObject.SetActive(state[pos] == mockPlayer.mark);
+            grid.GetChild(1).gameObject.SetActive(state[pos] == enemy.mark);
+        }
     }
 
     public void PlayerMove(int pos)
@@ -59,8 +79,10 @@ public class GameController : MonoBehaviour
         }
 
         state[pos] = mockPlayer.mark;
+        outcomeDecorator?.Apply(state, mockPlayer.mark);
 
-        PlaceMark(mockPlayer, pos);
+        UpdateStateVisual();
+        //PlaceMark(mockPlayer, pos);
         foreach (var gridTrigger in gridTriggers)
         {
             gridTrigger.enabled = false;
@@ -70,7 +92,8 @@ public class GameController : MonoBehaviour
         {
             state = enemy.Move(state, out int enemyPos);
 
-            PlaceMark(enemy, enemyPos);
+            UpdateStateVisual();
+            //PlaceMark(enemy, enemyPos);
             foreach (var gridTrigger in gridTriggers)
             {
                 gridTrigger.enabled = true;
