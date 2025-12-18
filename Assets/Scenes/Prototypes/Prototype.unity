@@ -927,8 +927,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mark: 1
+  markObj: {fileID: 0}
   epsilon: 0.1
   alpha: 0.1
+  valueMatrixShape: 030000000300000003000000030000000300000003000000030000000300000003000000
 --- !u!4 &1362755592
 Transform:
   m_ObjectHideFlags: 0
@@ -974,8 +976,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mark: 2
+  markObj: {fileID: 0}
   epsilon: 0.1
   alpha: 0.1
+  valueMatrixShape: 030000000300000003000000030000000300000003000000030000000300000003000000
 --- !u!4 &1582958906
 Transform:
   m_ObjectHideFlags: 0

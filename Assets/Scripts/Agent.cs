@@ -17,13 +17,18 @@ public class Agent : MonoBehaviour
     [Header("学习率")]
     [SerializeField] double alpha = 0.1;
 
-    public ValueMatrix valueMatrix = new ValueMatrix(new int[] {3, 3, 3, 3, 3, 3, 3, 3, 3});
-    int[] storedOutcome = null;
+    [Header("价值矩阵维度")]
+    [SerializeField] int[] valueMatrixShape;
+
+    public ValueMatrix valueMatrix;
+    int[] storedOutcome;
+    OutcomeCandidateGen outcomeCandidateGen;
 
     // Start is called before the first frame update
     void Awake()
     {
-        storedOutcome = new int[9];
+        valueMatrix = new ValueMatrix(valueMatrixShape);
+        outcomeCandidateGen = GetComponent<OutcomeCandidateGen>();
         EventBus.Subscribe<TrainingCompletedEvent>(OnTrainingCompleted);
     }
 
@@ -34,53 +39,45 @@ public class Agent : MonoBehaviour
 
     public void Init()
     {
-        System.Array.Clear(storedOutcome, 0, storedOutcome.Length);
+        storedOutcome = null;
     }
 
     public int[] Move(int[] state, out int pos)
     {
         int[] outcome = (int[])state.Clone();
-        pos = -1;
 
         // 所有能走的格子
-        List<int> posAvailable = new List<int>();
-
-        for (int i = 0; i < 9; ++i)
-        {
-            if (outcome[i] == 0)
-            {
-                posAvailable.Add(i);
-            }
-        }
+        List<(int[], int)> outcomeCandidates = outcomeCandidateGen.Apply(state, mark);
 
         // 有一定的概率做随机选择
         if (Random.value < epsilon)
         {
-            pos = posAvailable[Random.Range(0, posAvailable.Count)];
+            (outcome, pos) = outcomeCandidates[Random.Range(0, outcomeCandidates.Count)];
         }
         else
         {
             // 做最优选择
-            double optimalValue = double.NegativeInfinity;
+            (outcome, pos) = outcomeCandidates[0];
+            double optimalValue = valueMatrix[outcome];
 
-            foreach (int p in posAvailable)
+            foreach ((int[] outcomeCandidate, int posCandidate) in outcomeCandidates)
             {
-                int[] outcomeCandidate = (int[])state.Clone();
-                outcomeCandidate[p] = mark;
                 double value = valueMatrix[outcomeCandidate];
 
                 if (value > optimalValue)
                 {
-                    pos = p;
+                    (outcome, pos) = (outcomeCandidate, posCandidate);
                     optimalValue = value;
                 }
             }
         }
 
-        outcome[pos] = mark;
+        if (storedOutcome != null)
+        {
+            double error = valueMatrix[outcome] - valueMatrix[storedOutcome];
+            valueMatrix[storedOutcome] += alpha * error;
+        }
 
-        double error = valueMatrix[outcome] - valueMatrix[storedOutcome];
-        valueMatrix[storedOutcome] += alpha * error;
         storedOutcome = (int[])outcome.Clone();
 
         return outcome;
