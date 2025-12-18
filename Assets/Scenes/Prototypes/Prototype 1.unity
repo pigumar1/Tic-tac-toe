@@ -134,18 +134,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid (8)
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -282,18 +270,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -396,18 +372,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -509,18 +473,6 @@ PrefabInstance:
     - target: {fileID: 286077483403489665, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Name
       value: Grid (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
@@ -1011,18 +963,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid (7)
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 7
-      objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1207,7 +1147,6 @@ MonoBehaviour:
   mockPlayer: {fileID: 1362755591}
   enemy: {fileID: 1582958905}
   grids: {fileID: 798432090}
-  playerMark: {fileID: 1526035792726453295, guid: a73b0cefe2b1cd14eb01e1cfe868c1e1, type: 3}
   initState: 000000000000000000000000000000000000000000000000000000000000000000000000
   state: 
 --- !u!4 &1471402157
@@ -1297,18 +1236,6 @@ PrefabInstance:
     - target: {fileID: 286077483403489665, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Name
       value: Grid (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
@@ -1514,18 +1441,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid (4)
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1633,18 +1548,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayerMove
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1747,10 +1650,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid
       objectReference: {fileID: 0}
-    - target: {fileID: 3354125972085838092, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1471402156}
     - target: {fileID: 7006691393402189551, guid: bed62cf7959f28e4e80ce6116202c8da, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

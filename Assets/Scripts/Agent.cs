@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,9 +43,9 @@ public class Agent : MonoBehaviour
         List<(int[], int)> outcomeCandidates = outcomeCandidateGen.Apply(state, mark);
 
         // 有一定的概率做随机选择
-        if (Random.value < epsilon)
+        if (UnityEngine.Random.value < epsilon)
         {
-            (outcome, pos) = outcomeCandidates[Random.Range(0, outcomeCandidates.Count)];
+            (outcome, pos) = outcomeCandidates[UnityEngine.Random.Range(0, outcomeCandidates.Count)];
         }
         else
         {
@@ -81,6 +82,11 @@ public class Agent : MonoBehaviour
     {
         epsilon = 0;
         Clear();
+    }
+
+    public void DecayEpsilon()
+    {
+        epsilon = Math.Max(0.01, epsilon * 0.999999);
     }
 }
 

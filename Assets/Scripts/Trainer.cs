@@ -25,7 +25,7 @@ public class Trainer : MonoBehaviour
 
         judger = GetComponent<Judger>();
 
-        //int[] winner = new int[num_trials];
+        GameState[] results = new GameState[num_trials];
 
         for (int i = 0; i < num_trials; ++i)
         {
@@ -58,20 +58,32 @@ public class Trainer : MonoBehaviour
                 }
             }
 
-            //winner[i] = (int)gameState;
+            agent1.DecayEpsilon();
+            agent2.DecayEpsilon();
 
-            //if (i % 1000 == 0 && i > 0)
-            //{
-            //    int w1 = 0, w2 = 0, d = 0;
-            //    for (int j = i - 1000; j < i; ++j)
-            //    {
-            //        if (winner[j] == 0) w1++;
-            //        else if (winner[j] == 1) w2++;
-            //        else if (winner[j] == 2) d++;
-            //    }
+            results[i] = gameState;
 
-            //    Debug.Log($"[{i - 1000} ~ {i}]  P1:{w1}  P2:{w2}  Draw:{d}");
-            //}
+            if (i % 1000 == 0 && i > 0)
+            {
+                int w1 = 0, w2 = 0, d = 0;
+                for (int j = i - 1000; j < i; ++j)
+                {
+                    if (results[j] == GameState.Player1Won)
+                    {
+                        w1++;
+                    }
+                    else if (results[j] == GameState.Player2Won)
+                    {
+                        w2++;
+                    }
+                    else
+                    {
+                        d++;
+                    }
+                }
+
+                Debug.Log($"[{i - 1000} ~ {i}]  Agent1: {w1}  Agent2: {w2}  Draw: {d}");
+            }
         }
 
         Debug.Log("Training finished.");

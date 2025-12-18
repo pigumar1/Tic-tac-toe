@@ -1,11 +1,12 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class GameController : MonoBehaviour
+public class GameControllerCore : MonoBehaviour
 {
     [Header("»úÆ÷Ñ§Ï°")]
     [SerializeField] GameObject ML;
@@ -14,11 +15,10 @@ public class GameController : MonoBehaviour
 
     [Header("ÆåÅÌ")]
     [SerializeField] Transform grids;
-    [SerializeField] GameObject playerMark;
     [SerializeField] int[] initState;
 
     [Header("µ÷ÊÔ")]
-    [SerializeField] int[] state;
+    [SerializeField] protected int[] state;
 
     #region Components
     EventTrigger[] gridTriggers;
@@ -34,6 +34,13 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < grids.childCount; ++i)
         {
             gridTriggers[i] = grids.GetChild(i).GetComponent<EventTrigger>();
+
+            int pos = i;
+
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerClick;
+            entry.callback.AddListener(_ => PlayerMove(pos));
+            gridTriggers[i].triggers.Add(entry);
         }
 
         outcomeDecorator = GetComponent<OutcomeDecorator>();
@@ -59,7 +66,7 @@ public class GameController : MonoBehaviour
     //    GameObject.Instantiate(agent.markObj, grids.GetChild(pos));
     //}
 
-    void UpdateStateVisual()
+    protected virtual void UpdateStateVisual()
     {
         for (int pos = 0; pos < 9; ++pos)
         {
