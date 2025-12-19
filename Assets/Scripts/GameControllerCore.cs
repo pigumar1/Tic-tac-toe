@@ -107,4 +107,10 @@ public class GameControllerCore : MonoBehaviour
             }
         });
     }
+    
+    public void Hint()
+    {
+        mockPlayer.Move(state, out int pos);
+        Debug.Log(pos);
+    }
 }

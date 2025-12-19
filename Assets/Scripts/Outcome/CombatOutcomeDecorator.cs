@@ -15,12 +15,15 @@ public class CombatOutcomeDecorator : OutcomeDecorator
                 outcome[pos] = 0;
             }
         };
+
         System.Action<int> attackAgent = agent =>
         {
             outcome[9 + agent] = Mathf.Max(outcome[9 + agent] - 1, 0);
         };
 
         HashSet<int> posToClear = new HashSet<int>();
+        int enemy = mark == 1 ? 1 : 0;
+        int self = mark == 1 ? 0 : 1;
 
         foreach (var line in Utils.lines)
         {
@@ -30,14 +33,7 @@ public class CombatOutcomeDecorator : OutcomeDecorator
             {
                 posToClear.AddRange(line);
 
-                if (mark == 1)
-                {
-                    attackAgent(1);
-                }
-                else
-                {
-                    attackAgent(0);
-                }
+                attackAgent(enemy);
             }
         }
 
@@ -63,12 +59,12 @@ public class CombatOutcomeDecorator : OutcomeDecorator
 
             if (posWithTheMark.Count >= 5)
             {
-                attackAgent(1);
+                attackAgent(enemy);
                 clearGrids(posWithTheMark);
             }
             else
             {
-                attackAgent(0);
+                attackAgent(self);
                 for (int pos = 0; pos < 9; ++pos)
                 {
                     if (!posWithTheMark.Contains(pos))
