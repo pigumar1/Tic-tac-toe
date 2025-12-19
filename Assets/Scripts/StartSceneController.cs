@@ -87,6 +87,9 @@ public class StartSceneController : MonoBehaviour
         switch (logState)
         {
             case LogState.LoggedIn:
+                EventBus.Publish(new LoadEvent());
+                EventBus.Publish(new SceneTransitionEvent());
+
                 break;
             case LogState.LoggedOut:
                 HackClickLogInButton();
