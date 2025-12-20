@@ -88,7 +88,15 @@ public class StartSceneController : MonoBehaviour
         {
             case LogState.LoggedIn:
                 EventBus.Publish(new LoadEvent());
-                EventBus.Publish(new SceneTransitionEvent());
+                EventBus.Publish(new BeginSceneTransitionEvent());
+
+                if (SaveManager.data != null)
+                {
+                    EventBus.Publish(new BeginSceneLoadEvent
+                    {
+                        sceneName = SaveManager.data.sceneName,
+                    });
+                }
 
                 break;
             case LogState.LoggedOut:

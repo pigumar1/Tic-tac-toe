@@ -17,6 +17,11 @@ public class NewGamePrompt : MonoBehaviour
         {
             playerName = playerName
         });
+
+        EventBus.Publish(new BeginSceneLoadEvent
+        {
+            sceneName = "Tutorial"
+        });
     }
 
     public void UpdateWithName()

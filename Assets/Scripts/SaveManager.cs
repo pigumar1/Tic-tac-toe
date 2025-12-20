@@ -6,7 +6,7 @@ public class SaveManager : MonoBehaviour
 {
     static string savePath => Path.Combine(Application.persistentDataPath, "save.json");
 
-    public static SaveManager instance;
+    static SaveManager instance;
     public static SaveData data;
 
     [SerializeField] GameObject newGamePrompt;
@@ -15,12 +15,12 @@ public class SaveManager : MonoBehaviour
     {
         if (instance == null)
         {
+            DontDestroyOnLoad(gameObject);
             instance = this;
 
             EventBus.Subscribe<LoadEvent>(Load);
             EventBus.Subscribe<CreateSaveDataEvent>(Create);
 
-            DontDestroyOnLoad(gameObject);
             Debug.Log(savePath);
         }
         else if (instance != this)
@@ -31,10 +31,7 @@ public class SaveManager : MonoBehaviour
 
     private void Create(CreateSaveDataEvent e)
     {
-        data = new SaveData
-        {
-            name = e.playerName
-        };
+        data = new SaveData(e.playerName);
     }
 
     private void Save(SaveData data)
@@ -50,6 +47,7 @@ public class SaveManager : MonoBehaviour
         {
             string json = File.ReadAllText(savePath);
             data = JsonUtility.FromJson<SaveData>(json);
+
         }
         else
         {
@@ -78,5 +76,11 @@ public struct CreateSaveDataEvent
 [System.Serializable]
 public class SaveData
 {
-    public string name;
+    public string playerName;
+    public string sceneName;
+
+    public SaveData(string playerName)
+    {
+        this.playerName = playerName;
+    }
 }
