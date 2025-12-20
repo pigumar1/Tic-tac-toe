@@ -47,7 +47,6 @@ public class SaveManager : MonoBehaviour
         {
             string json = File.ReadAllText(savePath);
             data = JsonUtility.FromJson<SaveData>(json);
-
         }
         else
         {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class StartSceneController : MonoBehaviour
@@ -72,12 +73,12 @@ public class StartSceneController : MonoBehaviour
             GameObject loggedInPrompt = GameObject.Instantiate(this.loggedInPrompt, this.loggedInPrompt.transform.parent);
             loggedInPrompt.SetActive(true);
 
-            Image image = loggedInPrompt.GetComponent<Image>();
+            CanvasGroup canvasGroup = loggedInPrompt.GetComponent<CanvasGroup>();
             Sequence seq = DOTween.Sequence();
 
-            seq.Append(image.DOColor(Color.white, 1));
+            seq.Append(canvasGroup.DOFade(1, 1));
             seq.AppendInterval(1);
-            seq.Append(image.DOColor(Color.clear, 1));
+            seq.Append(canvasGroup.DOFade(0, 1));
             seq.AppendCallback(() => Destroy(loggedInPrompt));
         }
     }
