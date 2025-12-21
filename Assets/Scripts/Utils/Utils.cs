@@ -11,3 +11,8 @@ public static class Utils
             new[]{0,4,8}, new[]{2,4,6}
         };
 }
+
+public class SpinLockEvent
+{
+    public bool completed = false;
+}

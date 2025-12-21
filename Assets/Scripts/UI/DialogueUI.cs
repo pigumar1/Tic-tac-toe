@@ -40,7 +40,7 @@ public class DialogueUI : UIBase
         canvasGroup.DOFade(1, duration);
         yield return new WaitForSeconds(duration);
 
-        for (DialogueParagraph paragraph = dialogueDatabase[e.paragraphID]; paragraph != null; paragraph = paragraph.next)
+        for (DialogueParagraph paragraph = dialogueDatabase[e.paragraphID], next; paragraph != null; paragraph = next)
         {
             if (e.taskInfo != null)
             {
@@ -48,10 +48,13 @@ public class DialogueUI : UIBase
             }
 
             int counter;
+            next = paragraph.next;
 
             for (counter = 0; counter < paragraph.dialogueNodes.Count; ++counter)
             {
-                yield return StartCoroutine(HandleDialogueNode(paragraph.dialogueNodes[counter], newCounter => counter = newCounter - 1));
+                yield return StartCoroutine(HandleDialogueNode(paragraph.dialogueNodes[counter],
+                    newCounter => counter = newCounter - 1,
+                    id => next = dialogueDatabase[id]));
             }
         }
 
@@ -71,11 +74,17 @@ public class DialogueUI : UIBase
         gameObject.SetActive(false);
     }
 
-    IEnumerator HandleDialogueNode(DialogueNode node, Action<int> jump)
+    IEnumerator HandleDialogueNode(DialogueNode node, Action<int> jump, Action<int> setNext)
     {
         switch (node.speaker)
         {
-            case "PublishGeneralEvent":
+            case "SetNext":
+                {
+                    setNext.Invoke(int.Parse(node.lines.First()));
+
+                    break;
+                }
+            case "Publish":
                 {
                     List<string> args = new List<string>(node.lines);
                     string eventName = args.First();
@@ -90,10 +99,30 @@ public class DialogueUI : UIBase
 
                     break;
                 }
+            case "PublishAndWaitForRespond":
+                {
+                    bool locked = true;
+
+                    Action<DialogueRespondEvent> tryUnlock = _ => locked = false;
+
+                    EventBus.Subscribe(tryUnlock);
+
+                    node.speaker = "Publish";
+                    yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
+
+                    while (locked)
+                    {
+                        yield return null;
+                    }
+
+                    EventBus.Unsubscribe(tryUnlock);
+
+                    break;
+                }
             case "Player":
                 {
                     node.speaker = SaveManager.data.playerName;
-                    yield return StartCoroutine(HandleDialogueNode(node, jump));
+                    yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
 
                     break;
                 }
@@ -103,9 +132,11 @@ public class DialogueUI : UIBase
 ;
                     break;
                 }
+            case "MoveCharacter":
             case "ShowCharacter":
+            case "HideCharacter":
                 {
-                    ShowCharacterEvent e = new ShowCharacterEvent(node.lines);
+                    DOCharacterEvent e = new DOCharacterEvent(node.speaker.Replace("Character", ""), node.lines);
 
                     EventBus.Publish(e);
 
@@ -247,6 +278,8 @@ public struct EndDialogueEvent
 {
     public TaskInfo taskInfo;
 }
+
+public struct DialogueRespondEvent { }
 
 public struct GeneralEvent
 {

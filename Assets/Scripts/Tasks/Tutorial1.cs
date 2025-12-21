@@ -10,20 +10,26 @@ public class Tutorial1 : DelayedMonoBehaviour
     [SerializeField] RectTransform yangYangMap;
     [SerializeField] RectTransform yangYangDialogue;
     [SerializeField] CanvasGroup mapCanvasGroup;
+    [SerializeField] Button campButton;
 
     private float yangYangX;
 
     private void Start()
     {
-        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial, out TaskInfo taskInfo)
-            && (taskInfo == null || taskInfo.state == 0))
+        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial, out TaskInfo taskInfo))
         {
-            yangYangX = yangYangMap.anchoredPosition.x;
-            Destroy(yangYangMap.gameObject);
+            if (taskInfo == null || taskInfo.state == 0)
+            {
+                yangYangX = yangYangMap.anchoredPosition.x;
+                Destroy(yangYangMap.gameObject);
 
-            mapCanvasGroup.alpha = 0;
-            mapCanvasGroup.interactable = false;
-            mapCanvasGroup.blocksRaycasts = false;
+                mapCanvasGroup.alpha = 0;
+                mapCanvasGroup.interactable = false;
+                mapCanvasGroup.blocksRaycasts = false;
+            }
+
+            campButton.onClick.RemoveAllListeners();
+            campButton.onClick.AddListener(() => SceneTransition.To("Tutorial1"));
         }
     }
 
@@ -69,12 +75,12 @@ public class Tutorial1 : DelayedMonoBehaviour
                     Sequence sequence = DOTween.Sequence();
 
                     sequence.Append(yangYangDialogue.DOAnchorPosX(-yangYangX, 1));
-                    sequence.Append(mapCanvasGroup.DOFade(1, 0.5f));
                     sequence.AppendCallback(() =>
                     {
                         mapCanvasGroup.interactable = true;
                         mapCanvasGroup.blocksRaycasts = true;
                     });
+                    sequence.Append(mapCanvasGroup.DOFade(1, 0.5f));
 
                     break;
                 }

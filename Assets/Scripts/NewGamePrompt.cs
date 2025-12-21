@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,6 +18,9 @@ public class NewGamePrompt : MonoBehaviour
         {
             playerName = playerName
         });
+
+        gameObject.AddComponent<CanvasGroup>().DOFade(0, 0.5f)
+            .OnComplete(() => Destroy(this));
 
         EventBus.Publish(new BeginSceneLoadEvent
         {

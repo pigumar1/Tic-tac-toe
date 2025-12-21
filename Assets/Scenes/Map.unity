@@ -511,7 +511,7 @@ GameObject:
   - component: {fileID: 875447727}
   - component: {fileID: 875447726}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Camp Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -863,6 +863,7 @@ MonoBehaviour:
   yangYangMap: {fileID: 1647721392}
   yangYangDialogue: {fileID: 754994847}
   mapCanvasGroup: {fileID: 1786889991}
+  campButton: {fileID: 875447726}
 --- !u!4 &1576007848
 Transform:
   m_ObjectHideFlags: 0
