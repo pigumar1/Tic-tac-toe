@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tutorial : MonoBehaviour
 {
-    [SerializeField] List<DialogueSection> dialogueSections;
+    [SerializeField] DialogueParagraph startParagraph;
 
     // Start is called before the first frame update
     void Start()
@@ -15,9 +15,17 @@ public class Tutorial : MonoBehaviour
 
     private void RealStart(EndSceneTransitionEvent _)
     {
-        EventBus.Publish(new BeginDialogueEvent
+        if (TaskManager.instance.notStartedTasks.Contains(TaskID.Tutorial))
         {
-            sections = dialogueSections
-        });
+            TaskInfo taskInfo = TaskManager.instance.StartTask(TaskID.Tutorial);
+
+            taskInfo.paragraphID = startParagraph.id;
+
+            EventBus.Publish(new BeginDialogueEvent(taskInfo));
+        }
+        else if (TaskManager.instance.inProgressTasks.TryGetValue(TaskID.Tutorial, out TaskInfo taskInfo))
+        {
+            EventBus.Publish(new BeginDialogueEvent(taskInfo));
+        }
     }
 }
