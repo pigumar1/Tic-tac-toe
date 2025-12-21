@@ -1,0 +1,83 @@
+using DG.Tweening;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Tutorial1 : DelayedMonoBehaviour
+{
+    [SerializeField] DialogueParagraph startParagraph;
+    [SerializeField] RectTransform yangYangMap;
+    [SerializeField] RectTransform yangYangDialogue;
+    [SerializeField] CanvasGroup mapCanvasGroup;
+
+    private float yangYangX;
+
+    private void Start()
+    {
+        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial, out TaskInfo taskInfo)
+            && (taskInfo == null || taskInfo.state == 0))
+        {
+            yangYangX = yangYangMap.anchoredPosition.x;
+            Destroy(yangYangMap.gameObject);
+
+            mapCanvasGroup.alpha = 0;
+            mapCanvasGroup.interactable = false;
+            mapCanvasGroup.blocksRaycasts = false;
+        }
+    }
+
+    protected override void DelayedStart(EndSceneTransitionEvent _)
+    {
+        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial, out TaskInfo taskInfo))
+        {
+            if (taskInfo == null)
+            {
+                taskInfo = TaskManager.instance.StartTask(TaskID.Tutorial, startParagraph.id);
+
+                EventBus.Subscribe<EndDialogueEvent>(Advance);
+                EventBus.Publish(new BeginDialogueEvent(taskInfo));
+            }
+            else
+            {
+                switch (taskInfo.state)
+                {
+                    case 0:
+                        {
+                            EventBus.Subscribe<EndDialogueEvent>(Advance);
+                            EventBus.Publish(new BeginDialogueEvent(taskInfo));
+
+                            break;
+                        }
+                }
+            }
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Advance(EndDialogueEvent e)
+    {
+        ++e.taskInfo.state;
+
+        switch (e.taskInfo.state)
+        {
+            case 1:
+                {
+                    Sequence sequence = DOTween.Sequence();
+
+                    sequence.Append(yangYangDialogue.DOAnchorPosX(-yangYangX, 1));
+                    sequence.Append(mapCanvasGroup.DOFade(1, 0.5f));
+                    sequence.AppendCallback(() =>
+                    {
+                        mapCanvasGroup.interactable = true;
+                        mapCanvasGroup.blocksRaycasts = true;
+                    });
+
+                    break;
+                }
+        }
+    }
+}

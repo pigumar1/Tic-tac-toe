@@ -88,6 +88,15 @@ public class SceneTransition : MonoBehaviour
 
         gameObject.SetActive(false);
     }
+
+    public static void To(string sceneName)
+    {
+        instance.gameObject.SetActive(true);
+        EventBus.Publish(new BeginSceneLoadEvent
+        {
+            sceneName = sceneName
+        });
+    }
 }
 
 public struct BeginSceneTransitionEvent { }

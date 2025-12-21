@@ -20,7 +20,7 @@ public class NewGamePrompt : MonoBehaviour
 
         EventBus.Publish(new BeginSceneLoadEvent
         {
-            sceneName = "Tutorial1"
+            sceneName = "Map"
         });
     }
 

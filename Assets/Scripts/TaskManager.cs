@@ -32,10 +32,17 @@ public class TaskManager : MonoBehaviour
         SaveManager.data.WriteTasks();
     }
 
-    public TaskInfo StartTask(TaskID id)
+    public TaskInfo StartTask(TaskID id, int paragraphID = -1)
     {
         notStartedTasks.Remove(id);
-        return inProgressTasks[id] = new TaskInfo(id);
+        return inProgressTasks[id] = new TaskInfo(id, paragraphID);
+    }
+
+    public bool CompletedTask(TaskID id, out TaskInfo taskInfo)
+    {
+        taskInfo = null;
+
+        return !notStartedTasks.Contains(id) && !inProgressTasks.TryGetValue(id, out taskInfo);
     }
 }
 
@@ -48,10 +55,12 @@ public enum TaskID
 public class TaskInfo
 {
     public TaskID id;
-    public int paragraphID = -1;
+    public int state = 0;
+    public int paragraphID;
 
-    public TaskInfo(TaskID id)
+    public TaskInfo(TaskID id, int paragraphID)
     {
         this.id = id;
+        this.paragraphID = paragraphID;
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -62,6 +63,11 @@ public class DialogueUI : UIBase
         canvasGroup.DOFade(0, duration);
         yield return new WaitForSeconds(duration);
 
+        EventBus.Publish(new EndDialogueEvent
+        {
+            taskInfo = e.taskInfo
+        });
+
         gameObject.SetActive(false);
     }
 
@@ -69,6 +75,21 @@ public class DialogueUI : UIBase
     {
         switch (node.speaker)
         {
+            case "PublishGeneralEvent":
+                {
+                    List<string> args = new List<string>(node.lines);
+                    string eventName = args.First();
+
+                    args.RemoveAt(0);
+
+                    EventBus.Publish(new GeneralEvent
+                    {
+                        eventName = eventName,
+                        args = args
+                    });
+
+                    break;
+                }
             case "Player":
                 {
                     node.speaker = SaveManager.data.playerName;
@@ -109,7 +130,6 @@ public class DialogueUI : UIBase
 
                             int dest = int.Parse(node.lines[i * 2 + 1]);
 
-                            button.onClick.RemoveAllListeners();
                             button.onClick.AddListener(() =>
                             {
                                 jump.Invoke(dest);
@@ -141,6 +161,24 @@ public class DialogueUI : UIBase
                     while (locked)
                     {
                         yield return null;
+
+                        for (int i = 0; i < playerTalkButtons.Length; ++i)
+                        {
+                            Button button = playerTalkButtons[i];
+
+                            if (button.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Alpha1 + i))
+                            {
+                                button.onClick.Invoke();
+                                locked = false;
+
+                                break;
+                            }
+                        }
+                    }
+                    
+                    foreach (Button button in playerTalkButtons)
+                    {
+                        button.onClick.RemoveAllListeners();
                     }
 
                     playerTalkButtonCanvasGroup.DOFade(0, duration);
@@ -203,6 +241,17 @@ public class BeginDialogueEvent : ShowUIEvent
     }
 
     public override Type GetUIType() => typeof(DialogueUI);
+}
+
+public struct EndDialogueEvent
+{
+    public TaskInfo taskInfo;
+}
+
+public struct GeneralEvent
+{
+    public string eventName;
+    public List<string> args;
 }
 
 [Serializable]
