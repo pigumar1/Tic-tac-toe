@@ -40,5 +40,5 @@ MonoBehaviour:
     - 4
   - speaker: SetNext
     lines:
-    - 0
+    - 5
   next: {fileID: 11400000, guid: c7c74142e72a1214b940033d2bf50ed7, type: 2}

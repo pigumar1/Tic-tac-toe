@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OutcomeCandidateGen : MonoBehaviour
 {
-    OutcomeDecorator outcomeDecorator;
+    [SerializeField] OutcomeDecorator outcomeDecorator;
 
     private void Awake()
     {
@@ -19,11 +19,20 @@ public class OutcomeCandidateGen : MonoBehaviour
         {
             if (state[pos] == 0)
             {
-                int[] outcomeCandidate = (int[])state.Clone();
-                outcomeCandidate[pos] = mark;
-                outcomeDecorator?.Apply(outcomeCandidate, mark);
+                int[] oc = (int[])state.Clone();
+                oc[pos] = mark;
 
-                result.Add((outcomeCandidate, pos));
+                if (outcomeDecorator)
+                {
+                    foreach (int[] ocDecorated in outcomeDecorator.Apply(oc, mark))
+                    {
+                        result.Add((ocDecorated, pos));
+                    }
+                }
+                else
+                {
+                    result.Add((oc, pos));
+                }
             }
         }
 

@@ -7,10 +7,14 @@ using UnityEngine.UI;
 
 public class Tutorial2 : DelayedMonoBehaviour
 {
+    const float duration = 0.5f;
+
     [SerializeField] DialogueParagraph startParagraph;
     [SerializeField] CanvasGroup[] boardCanvasGroups;
     [SerializeField] GameObject[] game1Pieces;
-    [SerializeField] Cross[] crosses;
+    [SerializeField] Cross cross;
+    [SerializeField] Tutorial1OutcomeDecorator enemyOutcomeDecorator;
+    [SerializeField] TTTGameControllerCore gameControllerCore;
 
     protected override void DelayedStart(EndSceneTransitionEvent _)
     {
@@ -46,10 +50,41 @@ public class Tutorial2 : DelayedMonoBehaviour
         }
     }
 
+    public void EndGameReal(int result)
+    {
+        boardCanvasGroups[4].DOFade(0, duration);
+
+        switch ((GameState)result)
+        {
+            case GameState.Player1Won:
+                {
+                    EventBus.Publish(new DialogueJumpEvent
+                    {
+                        newCounter = 14
+                    });
+
+                    break;
+                }
+            case GameState.Player2Won:
+                {
+                    break;
+                }
+            case GameState.Draw:
+                {
+                    EventBus.Publish(new DialogueJumpEvent
+                    {
+                        newCounter = 11
+                    });
+
+                    break;
+                }
+        }
+
+        EventBus.Publish(new DialogueRespondEvent());
+    }
+
     private void HandleGeneralEvent(GeneralEvent e)
     {
-        float duration = 0.5f;
-
         switch (e.eventName)
         {
             case "show_board_1":
@@ -67,7 +102,7 @@ public class Tutorial2 : DelayedMonoBehaviour
                         sequence.AppendInterval(1.5f);
                     }
 
-                    sequence.Append(crosses.First().ApplyHalf());
+                    sequence.Append(cross.ApplyHalf());
                     sequence.AppendCallback(() => EventBus.Publish(new DialogueRespondEvent()));
 
                     break;
@@ -84,7 +119,7 @@ public class Tutorial2 : DelayedMonoBehaviour
             case "game_draw":
                 {
                     boardCanvasGroups.First().DOFade(0, duration);
-                    boardCanvasGroups.Last().DOFade(1, duration);
+                    boardCanvasGroups[3].DOFade(1, duration);
 
                     for (int i = 1; i < 3; ++i)
                     {
@@ -100,6 +135,24 @@ public class Tutorial2 : DelayedMonoBehaviour
                         boardCanvasGroups[i].DOFade(0, duration);
                     }
 
+                    break;
+                }
+            case "game_real_pre":
+                {
+                    boardCanvasGroups[4].DOFade(1, duration);
+                    break;
+                }
+            case "game_real":
+                {
+                    enemyOutcomeDecorator.first = true;
+                    boardCanvasGroups[4].interactable = true;
+                    boardCanvasGroups[4].blocksRaycasts = true;
+                    break;
+                }
+            case "game_real_retry":
+                {
+                    gameControllerCore.ResetGame();
+                    boardCanvasGroups[4].DOFade(1, duration);
                     break;
                 }
         }

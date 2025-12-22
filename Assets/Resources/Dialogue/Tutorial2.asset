@@ -73,10 +73,9 @@ MonoBehaviour:
   - speaker: ShowOptions
     lines:
     - "\u6211\u660E\u767D\u4E86\u3002"
-    - 18
+    - 
   - speaker: "\u70B3\u51B0\u6559\u5B98"
     lines:
-    - "\u4F60\u8BF4\u4F60\u660E\u767D\u4E86\uFF1F"
     - "\u597D\u3002\u90A3\u5C31\u7528\u884C\u52A8\u8BC1\u660E\u3002"
     - "\u4F60\u662F<player>\u5BF9\u5417\uFF1F\u6765\u548C\u6211\u4E0B\u4E95\u5B57\u68CB\u5427\u3002"
   next: {fileID: 11400000, guid: fc616ea60d5511840a9cbe4138d10af0, type: 2}

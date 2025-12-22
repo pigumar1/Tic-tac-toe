@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GameControllerPrototype2 : GameControllerCore
+public class GameControllerPrototype2 : TTTGameControllerCore
 {
     [SerializeField] TextMeshProUGUI yourHealthUI;
     [SerializeField] TextMeshProUGUI enemyHealthUI;

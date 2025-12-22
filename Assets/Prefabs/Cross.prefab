@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 6717827924520469663}
   - component: {fileID: 7899400832478072676}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Cross Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

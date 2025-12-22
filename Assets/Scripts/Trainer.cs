@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class Trainer : MonoBehaviour
     [Header("³õÊ¼×´Ì¬")]
     [SerializeField] int[] initState;
 
-    Judger judger;
+    public Judger judger;
 
     // Start is called before the first frame update
     void Start()
@@ -23,39 +24,37 @@ public class Trainer : MonoBehaviour
         agent1.Init(valueMatrixShape);
         agent2.Init(valueMatrixShape);
 
-        judger = GetComponent<Judger>();
+        Debug.Assert(judger != null);
 
         GameState[] results = new GameState[num_trials];
 
         for (int i = 0; i < num_trials; ++i)
         {
-            agent1.Clear();
-            agent2.Clear();
-
-            GameState gameState = GameState.NotDecided;
-            int[] state = (int[])initState.Clone();
+            TTTGameControllerCore.GameStateInit(out GameState gameState, out int[] state, initState, agent1, agent2);
 
             while (gameState == GameState.NotDecided)
             {
                 int[] outcome = agent1.Move(state);
-                gameState = judger.Apply(outcome);
 
-                if (gameState == GameState.Player1Won)
+                Action casePlayer1Won = () =>
                 {
                     agent1.valueMatrix[outcome] = 1;
                     agent2.valueMatrix[state] = -1;
-                }
-                else if (gameState == GameState.NotDecided)
-                {
-                    state = agent2.Move(outcome);
-                    gameState = judger.Apply(state);
+                };
 
-                    if (gameState == GameState.Player2Won)
+                Action casePlayer2Won = () =>
+                {
+                    agent2.valueMatrix[state] = 1;
+                    agent1.valueMatrix[outcome] = -1;
+                };
+
+                TTTGameControllerCore.GameStateCaseAnalysis(ref gameState, judger, outcome, casePlayer1Won, casePlayer2Won, () => { },
+                    () =>
                     {
-                        agent2.valueMatrix[state] = 1;
-                        agent1.valueMatrix[outcome] = -1;
-                    }
-                }
+                        state = agent2.Move(outcome);
+
+                        TTTGameControllerCore.GameStateCaseAnalysis(ref gameState, judger, state, casePlayer1Won, casePlayer2Won, () => { }, () => { });
+                    });
             }
 
             agent1.DecayEpsilon();

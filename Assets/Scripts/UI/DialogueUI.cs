@@ -4,15 +4,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogueUI : UIBase
 {
+    const float duration = 0.5f;
+
     [SerializeField] TextMeshProUGUI speaker;
     [SerializeField] TextMeshProUGUI line;
     [SerializeField] CanvasGroup playerTalkButtonCanvasGroup;
+    [SerializeField] Button skipButton;
 
     CanvasGroup canvasGroup;
     DialogueDatabase dialogueDatabase;
@@ -35,13 +37,17 @@ public class DialogueUI : UIBase
 
     IEnumerator CoroutineUpdate(BeginDialogueEvent e)
     {
-        float duration = 0.5f;
-
-        canvasGroup.DOFade(1, duration);
-        yield return new WaitForSeconds(duration);
+        yield return StartCoroutine(Fade(true));
 
         for (DialogueParagraph paragraph = dialogueDatabase[e.paragraphID], next; paragraph != null; paragraph = next)
         {
+            //skipButton.onClick.AddListener();
+
+            //Action<DialogueParagraph> setNext = obj =>
+            //{
+            //    next = obj;
+            //};
+
             if (e.taskInfo != null)
             {
                 e.taskInfo.paragraphID = paragraph.id;
@@ -63,8 +69,7 @@ public class DialogueUI : UIBase
             e.taskInfo.paragraphID = -1;
         }
 
-        canvasGroup.DOFade(0, duration);
-        yield return new WaitForSeconds(duration);
+        yield return StartCoroutine(Fade(false));
 
         EventBus.Publish(new EndDialogueEvent
         {
@@ -74,14 +79,27 @@ public class DialogueUI : UIBase
         gameObject.SetActive(false);
     }
 
+    IEnumerator Fade(bool fadeIn)
+    {
+        speaker.text = "";
+        line.text = "";
+
+        canvasGroup.DOFade(fadeIn ? 1 : 0, duration);
+        yield return new WaitForSeconds(duration);
+    }
+
     IEnumerator HandleDialogueNode(DialogueNode node, Action<int> jump, Action<int> setNext)
     {
         switch (node.speaker)
         {
+            case "Fade":
+                {
+                    yield return StartCoroutine(Fade(node.lines.First() == "1"));
+                    break;
+                }
             case "SetNext":
                 {
                     setNext.Invoke(int.Parse(node.lines.First()));
-
                     break;
                 }
             case "Publish":
@@ -103,9 +121,11 @@ public class DialogueUI : UIBase
                 {
                     bool locked = true;
 
-                    Action<DialogueRespondEvent> tryUnlock = _ => locked = false;
+                    Action<DialogueRespondEvent> unlock = _ => locked = false;
+                    Action<DialogueJumpEvent> onJump = e => jump.Invoke(e.newCounter);
 
-                    EventBus.Subscribe(tryUnlock);
+                    EventBus.Subscribe(unlock);
+                    EventBus.Subscribe(onJump);
 
                     node.speaker = "Publish";
                     yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
@@ -115,7 +135,8 @@ public class DialogueUI : UIBase
                         yield return null;
                     }
 
-                    EventBus.Unsubscribe(tryUnlock);
+                    EventBus.Unsubscribe(unlock);
+                    EventBus.Unsubscribe(onJump);
 
                     break;
                 }
@@ -159,13 +180,22 @@ public class DialogueUI : UIBase
                         {
                             button.gameObject.SetActive(true);
 
-                            int dest = int.Parse(node.lines[i * 2 + 1]);
-
                             button.onClick.AddListener(() =>
                             {
-                                jump.Invoke(dest);
                                 locked = false;
                             });
+
+                            string destStr = node.lines[i * 2 + 1];
+
+                            if (!string.IsNullOrEmpty(destStr))
+                            {
+                                int dest = int.Parse(destStr);
+
+                                button.onClick.AddListener(() =>
+                                {
+                                    jump.Invoke(dest);
+                                });
+                            }
 
                             for (int j = 0; j < button.transform.childCount; ++i)
                             {
@@ -181,8 +211,6 @@ public class DialogueUI : UIBase
                             button.gameObject.SetActive(false);
                         }
                     }
-
-                    float duration = 0.5f;
 
                     playerTalkButtonCanvasGroup.DOFade(1, duration);
                     playerTalkButtonCanvasGroup.interactable = true;
@@ -280,6 +308,11 @@ public struct EndDialogueEvent
 }
 
 public struct DialogueRespondEvent { }
+
+public struct DialogueJumpEvent
+{
+    public int newCounter;
+}
 
 public struct GeneralEvent
 {

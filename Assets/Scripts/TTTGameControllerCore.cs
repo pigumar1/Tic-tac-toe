@@ -1,0 +1,235 @@
+using DG.Tweening;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class TTTGameControllerCore : MonoBehaviour
+{
+    [Header("机器学习")]
+    [SerializeField] GameObject ML;
+    [SerializeField] Agent mockPlayer;
+    [SerializeField] Agent enemy;
+
+    [Header("棋盘")]
+    [SerializeField] Transform grids;
+    [SerializeField] int[] initState;
+
+    [Header("划线")]
+    [SerializeField] GameObject[] crossPrefabs;
+    [SerializeField] bool crossHalf = false;
+    public UnityEvent onPlayerCross;
+    public UnityEvent onEnemyCross;
+    public UnityEvent onBoardFull;
+
+    [Header("调试")]
+    [SerializeField] GameState gameState;
+    [SerializeField] protected int[] state;
+
+    #region Components
+    EventTrigger[] gridTriggers;
+    OutcomeDecorator outcomeDecorator;
+    Judger judger;
+    #endregion
+
+    // Start is called before the first frame update
+    private void Awake()
+    {
+        EventBus.Subscribe<TrainingCompletedEvent>(InitGame);
+
+        gridTriggers = new EventTrigger[grids.childCount];
+        for (int i = 0; i < grids.childCount; ++i)
+        {
+            gridTriggers[i] = grids.GetChild(i).GetComponent<EventTrigger>();
+
+            int pos = i;
+
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerClick;
+            entry.callback.AddListener(_ => PlayerMove(pos));
+            gridTriggers[i].triggers.Add(entry);
+        }
+
+        outcomeDecorator = GetComponent<OutcomeDecorator>();
+        judger = GetComponent<Judger>();
+    }
+
+    private void Start()
+    {
+        ML.GetComponentInChildren<Trainer>(true).judger = judger;
+        ML.SetActive(true);
+    }
+
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe<TrainingCompletedEvent>(InitGame);
+    }
+
+    public void ResetGame()
+    {
+        GameStateInit(out gameState, out state, initState, mockPlayer, enemy);
+        UpdateStateVisual();
+        SetGridTriggersEnabled(true);
+    }
+
+    void InitGame(TrainingCompletedEvent _) => ResetGame();
+
+    protected virtual void UpdateStateVisual()
+    {
+        for (int pos = 0; pos < 9; ++pos)
+        {
+            Transform grid = grids.GetChild(pos);
+
+            grid.GetChild(0).gameObject.SetActive(state[pos] == mockPlayer.mark);
+            grid.GetChild(1).gameObject.SetActive(state[pos] == enemy.mark);
+        }
+    }
+
+    private bool AgentIsPlayer(Agent agent) => agent.mark == mockPlayer.mark;
+
+    private void CrossCheck(int begin, int end, int type, Agent agent)
+    {
+        for (int i = begin; i < end; ++i)
+        {
+            int[] line = Utils.lines[i];
+
+            if (Utils.lineMatch(state, line, agent.mark))
+            {
+                GameObject crossObj = Instantiate(crossPrefabs[type], grids.GetChild(line[1]));
+                Cross cross = crossObj.GetComponent<Cross>();
+
+                cross.color = agent.markObj.GetComponentInChildren<Image>(true).color;
+
+                Sequence sequence = DOTween.Sequence();
+
+                sequence.Append(crossHalf ? cross.ApplyHalf() : cross.ApplyFull());
+                sequence.AppendCallback(() =>
+                {
+                    (AgentIsPlayer(agent) ? onPlayerCross : onEnemyCross).Invoke();
+                    Destroy(crossObj);
+                });
+            }
+        }
+    }
+
+    private void CrossCheck(Agent agent)
+    {
+        CrossCheck(0, 3, 0, agent);
+        CrossCheck(3, 6, 1, agent);
+        CrossCheck(6, 7, 2, agent);
+        CrossCheck(7, 8, 3, agent);
+    }
+
+    void SetGridTriggersEnabled(bool val)
+    {
+        foreach (var gridTrigger in gridTriggers)
+        {
+            gridTrigger.enabled = val;
+        }
+    }
+
+    public void PlayerMove(int pos)
+    {
+        if (state[pos] != 0)
+        {
+            Debug.LogWarning("玩家尝试下在已经被占据的格子");
+            return;
+        }
+
+        state[pos] = mockPlayer.mark;
+
+        CrossCheck(mockPlayer);
+
+        //if (outcomeDecorator)
+        //{
+        //    state = outcomeDecorator.Apply(state, mockPlayer.mark).First();
+        //}
+
+        UpdateStateVisual();
+        SetGridTriggersEnabled(false);
+
+        GameStateCaseAnalysis(ref gameState, judger, state,
+            () => { },
+            () => { },
+            () =>
+            {
+                onBoardFull.Invoke();
+            },
+            () =>
+            {
+                DOVirtual.DelayedCall(1, () =>
+                {
+                    state = enemy.Move(state, out int enemyPos);
+
+                    CrossCheck(enemy);
+
+                    UpdateStateVisual();
+
+                    GameStateCaseAnalysis(ref gameState, judger, state,
+                        () => { },
+                        () => { },
+                        () =>
+                        {
+                            onBoardFull.Invoke();
+                        },
+                        () =>
+                        {
+                            SetGridTriggersEnabled(true);
+                        });
+                });
+            });
+    }
+    
+    public void Hint()
+    {
+        mockPlayer.Move(state, out int pos);
+        Debug.Log(pos);
+    }
+
+    public static void GameStateCaseAnalysis(ref GameState gameState,
+        Judger judger,
+        int[] outcome,
+        System.Action casePlayer1Won,
+        System.Action casePlayer2Won,
+        System.Action caseDraw,
+        System.Action caseNotDecided)
+    {
+        gameState = judger.Apply(outcome);
+
+        switch (gameState)
+        {
+            case GameState.Player1Won:
+                {
+                    casePlayer1Won.Invoke();
+                    break;
+                }
+            case GameState.Player2Won:
+                {
+                    casePlayer2Won.Invoke();
+                    break;
+                }
+            case GameState.Draw:
+                {
+                    caseDraw.Invoke();
+                    break;
+                }
+            case GameState.NotDecided:
+                {
+                    caseNotDecided.Invoke();
+                    break;
+                }
+        }
+    }
+
+    public static void GameStateInit(out GameState gameState, out int[] state, int[] initState, Agent agent1, Agent agent2)
+    {
+        agent1.Clear();
+        agent2.Clear();
+
+        gameState = GameState.NotDecided;
+        state = (int[])initState.Clone();
+    }
+}

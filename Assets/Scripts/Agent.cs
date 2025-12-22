@@ -14,6 +14,7 @@ public class Agent : MonoBehaviour
 
     [Header("随机选择概率")]
     [SerializeField] double epsilon = 0.1;
+    [SerializeField] double decay = 0.999;
 
     [Header("学习率")]
     [SerializeField] double alpha = 0.1;
@@ -86,7 +87,12 @@ public class Agent : MonoBehaviour
 
     public void DecayEpsilon()
     {
-        epsilon = Math.Max(0.01, epsilon * 0.999999);
+        epsilon = Math.Max(0.01, epsilon * decay);
+
+        //if (epsilon < 0.011)
+        //{
+        //    Debug.LogWarning("epsilon已降至0.01");
+        //}
     }
 }
 

@@ -6,8 +6,11 @@ using UnityEngine.UI;
 
 public class CombatOutcomeDecorator : OutcomeDecorator
 {
-    public override void Apply(int[] outcome, int mark)
+    public override List<int[]> Apply(int[] outcome, int mark)
     {
+        outcome = (int[])outcome.Clone();
+        List<int[]> result = new List<int[]> { outcome };
+
         System.Action<HashSet<int>> clearGrids = posToClear =>
         {
             foreach (var pos in posToClear)
@@ -27,9 +30,7 @@ public class CombatOutcomeDecorator : OutcomeDecorator
 
         foreach (var line in Utils.lines)
         {
-            if (outcome[line[0]] == mark &&
-            outcome[line[1]] == mark &&
-                outcome[line[2]] == mark)
+            if (Utils.lineMatch(outcome, line, mark))
             {
                 posToClear.AddRange(line);
 
@@ -49,7 +50,7 @@ public class CombatOutcomeDecorator : OutcomeDecorator
             {
                 if (outcome[pos] == 0)
                 {
-                    return;
+                    return result;
                 }
                 else if (outcome[pos] == mark)
                 {
@@ -74,5 +75,7 @@ public class CombatOutcomeDecorator : OutcomeDecorator
                 }
             }
         }
+
+        return result;
     }
 }

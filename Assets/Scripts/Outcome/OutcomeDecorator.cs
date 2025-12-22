@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class OutcomeDecorator : MonoBehaviour
 {
-    public abstract void Apply(int[] outcome, int mark);
+    public abstract List<int[]> Apply(int[] outcome, int mark);
 }
