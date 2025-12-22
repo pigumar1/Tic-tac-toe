@@ -60,6 +60,9 @@ public class DialogueUI : UIBase
         playerTalkButtons = playerTalkButtonCanvasGroup.GetComponentsInChildren<Button>();
         skipButton.onClick.AddListener(() =>
         {
+            DisablePlayerTalkButtons();
+            playerTalkButtonCanvasGroup.alpha = 0;
+
             StopAllCoroutines();
             StartCoroutine(Fade(false));
             nextParagraph(paragraph.next);
@@ -71,6 +74,17 @@ public class DialogueUI : UIBase
 
             SceneTransition.To(SceneManager.GetActiveScene().name, Color.black);
         });
+    }
+
+    private void DisablePlayerTalkButtons()
+    {
+        foreach (Button button in playerTalkButtons)
+        {
+            button.onClick.RemoveAllListeners();
+        }
+
+        playerTalkButtonCanvasGroup.interactable = false;
+        playerTalkButtonCanvasGroup.blocksRaycasts = false;
     }
 
     private void Show(BeginDialogueEvent e)
@@ -129,8 +143,19 @@ public class DialogueUI : UIBase
 
     IEnumerator HandleDialogueNode(DialogueNode node, Action<int> jump, Action<int> setNext)
     {
+        Func<int> nodeFirstIntArg = () => int.Parse(node.lines.First());
+
         switch (node.speaker)
         {
+            case "CompleteTask":
+                {
+                    EventBus.Publish(new CompleteTaskEvent
+                    {
+                        id = (TaskID)nodeFirstIntArg.Invoke()
+                    });
+
+                    break;
+                }
             case "Fade":
                 {
                     yield return StartCoroutine(Fade(node.lines.First() == "1"));
@@ -138,7 +163,7 @@ public class DialogueUI : UIBase
                 }
             case "SetNext":
                 {
-                    setNext.Invoke(int.Parse(node.lines.First()));
+                    setNext.Invoke(nodeFirstIntArg.Invoke());
                     break;
                 }
             case "Publish":
@@ -188,7 +213,7 @@ public class DialogueUI : UIBase
                 }
             case "Jump":
                 {
-                    jump(int.Parse(node.lines[0]));
+                    jump(nodeFirstIntArg.Invoke());
 ;
                     break;
                 }
@@ -274,14 +299,8 @@ public class DialogueUI : UIBase
                         }
                     }
                     
-                    foreach (Button button in playerTalkButtons)
-                    {
-                        button.onClick.RemoveAllListeners();
-                    }
-
+                    DisablePlayerTalkButtons();
                     playerTalkButtonCanvasGroup.DOFade(0, duration);
-                    playerTalkButtonCanvasGroup.interactable = false;
-                    playerTalkButtonCanvasGroup.blocksRaycasts = false;
 
                     break;
                 }

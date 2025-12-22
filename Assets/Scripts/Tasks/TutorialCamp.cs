@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Tutorial2 : DelayedMonoBehaviour
+public class TutorialCamp : DelayedMonoBehaviour
 {
     const float duration = 0.5f;
 
@@ -18,35 +18,36 @@ public class Tutorial2 : DelayedMonoBehaviour
 
     protected override void DelayedStart(EndSceneTransitionEvent _)
     {
-        TaskInfo taskInfo = TaskManager.instance.inProgressTasks[TaskID.Tutorial];
-
-        EventBus.Subscribe<GeneralEvent>(HandleGeneralEvent);
-
-        switch (taskInfo.state)
+        if (TaskManager.instance.inProgressTasks.TryGetValue(TaskID.Tutorial, out TaskInfo taskInfo))
         {
-            case 1:
-                {
-                    ++taskInfo.state;
-                    taskInfo.paragraphID = startParagraph.id;
+            EventBus.Subscribe<GeneralEvent>(HandleGeneralEvent);
 
-                    EventBus.Publish(new BeginDialogueEvent(taskInfo));
-
-                    break;
-                }
-            case 2:
-                {
-                    if (taskInfo.paragraphID >= 3)
+            switch (taskInfo.state)
+            {
+                case 1:
                     {
-                        EventBus.Publish(new DOCharacterEvent("Show", new List<string>
+                        ++taskInfo.state;
+                        taskInfo.paragraphID = startParagraph.id;
+
+                        EventBus.Publish(new BeginDialogueEvent(taskInfo));
+
+                        break;
+                    }
+                case 2:
+                    {
+                        if (taskInfo.paragraphID >= 3 && taskInfo.paragraphID <= 6)
+                        {
+                            EventBus.Publish(new DOCharacterEvent("Show", new List<string>
                         {
                             "0",
                         }));
+                        }
+
+                        EventBus.Publish(new BeginDialogueEvent(taskInfo));
+
+                        break;
                     }
-
-                    EventBus.Publish(new BeginDialogueEvent(taskInfo));
-
-                    break;
-                }
+            }
         }
     }
 

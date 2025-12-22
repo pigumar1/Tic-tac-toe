@@ -29,7 +29,7 @@ public class Tutorial1 : DelayedMonoBehaviour
             }
 
             campButton.onClick.RemoveAllListeners();
-            campButton.onClick.AddListener(() => SceneTransition.To("Tutorial1"));
+            campButton.onClick.AddListener(() => SceneTransition.To("Camp"));
         }
     }
 

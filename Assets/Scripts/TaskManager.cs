@@ -20,6 +20,7 @@ public class TaskManager : MonoBehaviour
             instance = this;
 
             EventBus.Subscribe<SaveDataDeserializedEvent>(CacheTasks);
+            EventBus.Subscribe<CompleteTaskEvent>(CompleteTask);
         }
         else if (instance != this)
         {
@@ -45,9 +46,9 @@ public class TaskManager : MonoBehaviour
         return !notStartedTasks.Contains(id) && !inProgressTasks.TryGetValue(id, out taskInfo);
     }
 
-    void CompleteTask(TaskID id)
+    void CompleteTask(CompleteTaskEvent e)
     {
-        inProgressTasks.Remove(id);
+        inProgressTasks.Remove(e.id);
     }
 }
 
@@ -68,4 +69,9 @@ public class TaskInfo
         this.id = id;
         this.paragraphID = paragraphID;
     }
+}
+
+public struct CompleteTaskEvent
+{
+    public TaskID id;
 }
