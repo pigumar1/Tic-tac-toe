@@ -1,28 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Tutorial1OutcomeDecorator : OutcomeDecorator
 {
-    public bool first = false;
-    int i = 0;
-
     public override List<int[]> Apply(int[] outcome, int mark)
     {
-        if (first)
+        if (outcome.Count(m => m != 0) == 2 && outcome[4] == mark)
         {
-            ++i;
-
-            if (i == 8)
-            {
-                first = false;
-                i = 0;
-            }
-
-            if (outcome[4] == mark)
-            {
-                return new List<int[]>();
-            }
+            return new List<int[]>();
         }
 
         return new List<int[]> { outcome };

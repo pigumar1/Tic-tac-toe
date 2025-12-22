@@ -52,6 +52,7 @@ MonoBehaviour:
   mark: 2
   markObj: {fileID: 8072298261362057424, guid: 29eabbadb2e015b468abbe5103963c66, type: 3}
   epsilon: 0.1
+  decay: 0.99992
   alpha: 0.1
 --- !u!114 &4763306574893516300
 MonoBehaviour:
@@ -118,8 +119,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ML: {fileID: 7304983298449906392}
-  mockPlayer: {fileID: 7436977598036232490}
-  enemy: {fileID: 3880292625736943471}
+  agent1: {fileID: 7436977598036232490}
+  agent2: {fileID: 3880292625736943471}
   grids: {fileID: 912799886763887039}
   initState: 000000000000000000000000000000000000000000000000000000000000000000000000
   crossPrefabs:
@@ -139,6 +140,10 @@ MonoBehaviour:
       m_Calls: []
   gameState: 0
   state: 
+  player: {fileID: 7436977598036232490}
+  enemy: {fileID: 3880292625736943471}
+  turnDelay: 1
+  boardCanvasGroup: {fileID: 4101928866147209594}
 --- !u!114 &8812890024741522040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,7 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent1: {fileID: 7436977598036232490}
   agent2: {fileID: 3880292625736943471}
-  num_trials: 30000
+  num_trials: 40000
   valueMatrixShape: 030000000300000003000000030000000300000003000000030000000300000003000000
   initState: 000000000000000000000000000000000000000000000000000000000000000000000000
   judger: {fileID: 0}
@@ -297,6 +302,7 @@ MonoBehaviour:
   mark: 1
   markObj: {fileID: 1526035792726453295, guid: a73b0cefe2b1cd14eb01e1cfe868c1e1, type: 3}
   epsilon: 0.1
+  decay: 0.99992
   alpha: 0.1
 --- !u!114 &9030096423225029082
 MonoBehaviour:
@@ -807,6 +813,11 @@ PrefabInstance:
 --- !u!224 &912799886763887039 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3839626618599208554, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
+  m_PrefabInstance: {fileID: 4171444559851126741}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &4101928866147209594 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 76288703601405615, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
   m_PrefabInstance: {fileID: 4171444559851126741}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &4322785164546106550 stripped

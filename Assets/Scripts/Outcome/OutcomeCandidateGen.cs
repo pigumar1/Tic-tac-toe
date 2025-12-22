@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OutcomeCandidateGen : MonoBehaviour
 {
-    [SerializeField] OutcomeDecorator outcomeDecorator;
+    public OutcomeDecorator outcomeDecorator;
 
     private void Awake()
     {

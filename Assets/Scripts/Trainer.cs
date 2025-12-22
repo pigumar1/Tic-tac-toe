@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class Trainer : MonoBehaviour
 {
-    [SerializeField] Agent agent1;
-    [SerializeField] Agent agent2;
-    [SerializeField] int num_trials = 30000;
+    [SerializeField] protected Agent agent1;
+    [SerializeField] protected Agent agent2;
+    [SerializeField] protected int num_trials = 30000;
 
     [Header("价值矩阵维度")]
-    [SerializeField] int[] valueMatrixShape;
+    [SerializeField] protected int[] valueMatrixShape;
 
     [Header("初始状态")]
-    [SerializeField] int[] initState;
+    [SerializeField] protected int[] initState;
 
     public Judger judger;
 

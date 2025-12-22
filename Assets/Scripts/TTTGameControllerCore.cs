@@ -6,13 +6,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public class TTTGameControllerCore : MonoBehaviour
 {
     [Header("机器学习")]
     [SerializeField] GameObject ML;
-    [SerializeField] Agent mockPlayer;
-    [SerializeField] Agent enemy;
+    [SerializeField] Agent agent1;
+    [SerializeField] Agent agent2;
 
     [Header("棋盘")]
     [SerializeField] Transform grids;
@@ -29,16 +30,22 @@ public class TTTGameControllerCore : MonoBehaviour
     [SerializeField] GameState gameState;
     [SerializeField] protected int[] state;
 
+    [Header("其它")]
+    public Agent player;
+    public Agent enemy;
+    [SerializeField] float turnDelay = 1;
+
     #region Components
     EventTrigger[] gridTriggers;
     OutcomeDecorator outcomeDecorator;
     Judger judger;
+    [SerializeField] CanvasGroup boardCanvasGroup;
     #endregion
 
     // Start is called before the first frame update
     private void Awake()
     {
-        EventBus.Subscribe<TrainingCompletedEvent>(InitGame);
+        EventBus.Subscribe<TrainingCompletedEvent>(ResetGame);
 
         gridTriggers = new EventTrigger[grids.childCount];
         for (int i = 0; i < grids.childCount; ++i)
@@ -65,17 +72,34 @@ public class TTTGameControllerCore : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventBus.Unsubscribe<TrainingCompletedEvent>(InitGame);
+        EventBus.Unsubscribe<TrainingCompletedEvent>(ResetGame);
     }
 
     public void ResetGame()
     {
-        GameStateInit(out gameState, out state, initState, mockPlayer, enemy);
+        GameStateInit(out gameState, out state, initState, agent1, agent2);
         UpdateStateVisual();
         SetGridTriggersEnabled(true);
     }
 
-    void InitGame(TrainingCompletedEvent _) => ResetGame();
+    void ResetGame(TrainingCompletedEvent _) => ResetGame();
+
+    public void StartGame()
+    {
+        boardCanvasGroup.interactable = true;
+        boardCanvasGroup.blocksRaycasts = true;
+
+        if (player == agent2)
+        {
+            Debug.Assert(enemy == agent1);
+
+            int pos = (new int[] { 0, 2, 6, 8 })[Random.Range(0, 4)];
+            state[pos] = enemy.mark;
+            //state = enemy.Move(state, out int _);
+
+            UpdateStateVisual();
+        }
+    }
 
     protected virtual void UpdateStateVisual()
     {
@@ -83,12 +107,10 @@ public class TTTGameControllerCore : MonoBehaviour
         {
             Transform grid = grids.GetChild(pos);
 
-            grid.GetChild(0).gameObject.SetActive(state[pos] == mockPlayer.mark);
-            grid.GetChild(1).gameObject.SetActive(state[pos] == enemy.mark);
+            grid.GetChild(0).gameObject.SetActive(state[pos] == agent1.mark);
+            grid.GetChild(1).gameObject.SetActive(state[pos] == agent2.mark);
         }
     }
-
-    private bool AgentIsPlayer(Agent agent) => agent.mark == mockPlayer.mark;
 
     private void CrossCheck(int begin, int end, int type, Agent agent)
     {
@@ -108,7 +130,7 @@ public class TTTGameControllerCore : MonoBehaviour
                 sequence.Append(crossHalf ? cross.ApplyHalf() : cross.ApplyFull());
                 sequence.AppendCallback(() =>
                 {
-                    (AgentIsPlayer(agent) ? onPlayerCross : onEnemyCross).Invoke();
+                    (agent == player ? onPlayerCross : onEnemyCross).Invoke();
                     Destroy(crossObj);
                 });
             }
@@ -131,6 +153,20 @@ public class TTTGameControllerCore : MonoBehaviour
         }
     }
 
+    public void SetPlayerFirst(bool first)
+    {
+        if (first)
+        {
+            player = agent1;
+            enemy = agent2;
+        }
+        else
+        {
+            player = agent2;
+            enemy = agent1;
+        }
+    }
+
     public void PlayerMove(int pos)
     {
         if (state[pos] != 0)
@@ -139,9 +175,9 @@ public class TTTGameControllerCore : MonoBehaviour
             return;
         }
 
-        state[pos] = mockPlayer.mark;
+        state[pos] = player.mark;
 
-        CrossCheck(mockPlayer);
+        CrossCheck(player);
 
         //if (outcomeDecorator)
         //{
@@ -160,7 +196,7 @@ public class TTTGameControllerCore : MonoBehaviour
             },
             () =>
             {
-                DOVirtual.DelayedCall(1, () =>
+                DOVirtual.DelayedCall(turnDelay, () =>
                 {
                     state = enemy.Move(state, out int enemyPos);
 
@@ -185,7 +221,7 @@ public class TTTGameControllerCore : MonoBehaviour
     
     public void Hint()
     {
-        mockPlayer.Move(state, out int pos);
+        agent1.Move(state, out int pos);
         Debug.Log(pos);
     }
 

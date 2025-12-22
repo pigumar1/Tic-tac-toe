@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa6b75b2c05435e42bc0645b24a704f2, type: 3}
+  m_Name: CampYangYang
+  m_EditorClassIdentifier: 
+  id: 8
+  dialogueNodes:
+  - speaker: "\u6768\u6768"
+    lines:
+    - "\u8981\u548C\u6211\u4E00\u8D77\u7EC3\u4E60\u4E0B<b>\u4E95\u5B57\u68CB</b>\u5417\uFF1F<continue>"
+  - speaker: ShowOptions
+    lines:
+    - "\u597D\u3002"
+    - 
+    - "\u7B97\u4E86\uFF0C\u4E0B\u6B21\u518D\u8BF4\u3002"
+    - 10000
+  - speaker: MoveCharacter
+    lines:
+    - 2
+    - 0
+  - speaker: Publish
+    lines:
+    - game_yang_pre
+  - speaker: "\u6768\u6768"
+    lines:
+    - "\u4F60\u60F3\u5148\u624B\u8FD8\u662F\u540E\u624B\uFF1F<continue>"
+  - speaker: ShowOptions
+    lines:
+    - "\u5148\u624B\u3002"
+    - 7
+    - "\u540E\u624B\u3002"
+    - 
+  - speaker: Publish
+    lines:
+    - game_yang_switch
+  - speaker: "\u6768\u6768"
+    lines:
+    - "\u597D\uFF01\u6211\u4EEC\u5F00\u59CB\u5427\uFF01"
+  - speaker: Fade
+    lines:
+    - 0
+  - speaker: PublishAndWaitForRespond
+    lines:
+    - game_yang
+  - speaker: Fade
+    lines:
+    - 1
+  - speaker: "\u6768\u6768"
+    lines:
+    - "\u8D62\u5566\uFF5E\u8FD9\u76D8\u6211\u5148\u6536\u4E0B\u4E86\u3002"
+    - "\u518D\u6765\u4E00\u5C40\u5417\uFF1F<continue>"
+  - speaker: Jump
+    lines:
+    - 15
+  - speaker: Fade
+    lines:
+    - 1
+  - speaker: "\u6768\u6768"
+    lines:
+    - "\u4E95\u5B57\u68CB\u597D\u50CF\u5F88\u5BB9\u6613\u5E73\u5C40\u5440\u3002\n\u53EA\u8981\u53CC\u65B9\u90FD\u4E0D\u8D70\u795E\u5C31\u4F1A\u5E73\u5C40\u7684\u6837\u5B50\u3002"
+    - "\u518D\u6765\u4E00\u5C40\u5417\uFF1F<continue>"
+  - speaker: ShowOptions
+    lines:
+    - "\u597D\u3002"
+    - 3
+    - "\u7B97\u4E86\uFF0C\u5148\u8FD9\u6837\u5427\u3002"
+    - 16
+  - speaker: MoveCharacter
+    lines:
+    - 2
+    - 811
+  next: {fileID: 0}
+  stateMod: 

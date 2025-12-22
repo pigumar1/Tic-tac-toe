@@ -42,7 +42,7 @@ public class DialogueUI : UIBase
 
     void nextParagraph(DialogueParagraph next)
     {
-        if (taskInfo != null && paragraph.stateMod.Length > 0)
+        if (taskInfo != null && paragraph.stateMod != null && paragraph.stateMod.Length > 0)
         {
             taskInfo.state = paragraph.stateMod.First();
         }

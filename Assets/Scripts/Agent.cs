@@ -13,7 +13,7 @@ public class Agent : MonoBehaviour
     public GameObject markObj;
 
     [Header("随机选择概率")]
-    [SerializeField] double epsilon = 0.1;
+    public double epsilon = 0.1;
     [SerializeField] double decay = 0.999;
 
     [Header("学习率")]
