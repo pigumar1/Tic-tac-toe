@@ -13,7 +13,10 @@ public abstract class DelayedMonoBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         EventBus.Unsubscribe<EndSceneTransitionEvent>(DelayedStart);
+        DelayedOnDestroy();
     }
 
     protected abstract void DelayedStart(EndSceneTransitionEvent _);
+
+    protected abstract void DelayedOnDestroy();
 }

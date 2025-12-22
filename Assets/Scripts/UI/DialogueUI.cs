@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DialogueUI : UIBase
@@ -20,6 +22,35 @@ public class DialogueUI : UIBase
     DialogueDatabase dialogueDatabase;
     Button[] playerTalkButtons;
 
+    #region ¾çÇé×´Ì¬
+    TaskInfo taskInfo;
+    DialogueParagraph _paragraph;
+    DialogueParagraph paragraph
+    {
+        get => _paragraph;
+
+        set
+        {
+            _paragraph = value;
+
+            if (taskInfo != null)
+            {
+                taskInfo.paragraphID = value ? value.id : -1;
+            }
+        }
+    }
+
+    void nextParagraph(DialogueParagraph next)
+    {
+        if (taskInfo != null && paragraph.stateMod.Length > 0)
+        {
+            taskInfo.state = paragraph.stateMod.First();
+        }
+
+        paragraph = next;
+    }
+    #endregion
+
     private void Awake()
     {
         EventBus.Subscribe<BeginDialogueEvent>(Show);
@@ -27,6 +58,19 @@ public class DialogueUI : UIBase
         canvasGroup = GetComponent<CanvasGroup>();
         dialogueDatabase = Resources.Load<DialogueDatabase>("Dialogue/Database");
         playerTalkButtons = playerTalkButtonCanvasGroup.GetComponentsInChildren<Button>();
+        skipButton.onClick.AddListener(() =>
+        {
+            StopAllCoroutines();
+            StartCoroutine(Fade(false));
+            nextParagraph(paragraph.next);
+
+            if (paragraph == null)
+            {
+                EndDialogue();
+            }
+
+            SceneTransition.To(SceneManager.GetActiveScene().name, Color.black);
+        });
     }
 
     private void Show(BeginDialogueEvent e)
@@ -37,24 +81,15 @@ public class DialogueUI : UIBase
 
     IEnumerator CoroutineUpdate(BeginDialogueEvent e)
     {
+        taskInfo = e.taskInfo;
+        paragraph = dialogueDatabase[e.paragraphID];
+
         yield return StartCoroutine(Fade(true));
 
-        for (DialogueParagraph paragraph = dialogueDatabase[e.paragraphID], next; paragraph != null; paragraph = next)
+        while (paragraph != null)
         {
-            //skipButton.onClick.AddListener();
-
-            //Action<DialogueParagraph> setNext = obj =>
-            //{
-            //    next = obj;
-            //};
-
-            if (e.taskInfo != null)
-            {
-                e.taskInfo.paragraphID = paragraph.id;
-            }
-
             int counter;
-            next = paragraph.next;
+            DialogueParagraph next = paragraph.next;
 
             for (counter = 0; counter < paragraph.dialogueNodes.Count; ++counter)
             {
@@ -62,19 +97,23 @@ public class DialogueUI : UIBase
                     newCounter => counter = newCounter - 1,
                     id => next = dialogueDatabase[id]));
             }
-        }
 
-        if (e.taskInfo != null)
-        {
-            e.taskInfo.paragraphID = -1;
+            nextParagraph(next);
         }
 
         yield return StartCoroutine(Fade(false));
 
+        EndDialogue();
+    }
+
+    void EndDialogue()
+    {
         EventBus.Publish(new EndDialogueEvent
         {
-            taskInfo = e.taskInfo
+            taskInfo = taskInfo
         });
+
+        taskInfo = null;
 
         gameObject.SetActive(false);
     }
@@ -262,8 +301,30 @@ public class DialogueUI : UIBase
 
                         if (!cont)
                         {
-                            while (!Input.GetMouseButtonDown(0))
+                            var eventSystem = EventSystem.current;
+                            var eventData = new PointerEventData(eventSystem);
+                            var results = new List<RaycastResult>();
+
+                            while (true)
                             {
+                                eventData.position = Input.mousePosition;
+                                results.Clear();
+
+                                eventSystem.RaycastAll(eventData, results);
+
+                                bool hitButton = false;
+                                for (int i = 0; i < results.Count; i++)
+                                {
+                                    if (results[i].gameObject.TryGetComponent<Button>(out _))
+                                    {
+                                        hitButton = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!hitButton && Input.GetMouseButtonDown(0))
+                                    break;
+
                                 yield return null;
                             }
 

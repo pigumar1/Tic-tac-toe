@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneTransition : MonoBehaviour
 {
     CanvasGroup canvasGroup;
+    [SerializeField] Image image;
 
     static SceneTransition instance;
 
@@ -89,8 +91,12 @@ public class SceneTransition : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public static void To(string sceneName)
+    public static void To(string sceneName) => To(sceneName, Color.white);
+
+    public static void To(string sceneName, Color color)
     {
+        instance.image.color = color;
+
         instance.gameObject.SetActive(true);
         EventBus.Publish(new BeginSceneLoadEvent
         {

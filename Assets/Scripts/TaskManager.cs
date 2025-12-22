@@ -44,6 +44,11 @@ public class TaskManager : MonoBehaviour
 
         return !notStartedTasks.Contains(id) && !inProgressTasks.TryGetValue(id, out taskInfo);
     }
+
+    void CompleteTask(TaskID id)
+    {
+        inProgressTasks.Remove(id);
+    }
 }
 
 public enum TaskID

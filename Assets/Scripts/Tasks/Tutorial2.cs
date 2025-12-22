@@ -157,4 +157,9 @@ public class Tutorial2 : DelayedMonoBehaviour
                 }
         }
     }
+
+    protected override void DelayedOnDestroy()
+    {
+        EventBus.Unsubscribe<GeneralEvent>(HandleGeneralEvent);
+    }
 }

@@ -64,10 +64,13 @@ public class Tutorial1 : DelayedMonoBehaviour
         }
     }
 
+    protected override void DelayedOnDestroy()
+    {
+        EventBus.Unsubscribe<EndDialogueEvent>(Advance);
+    }
+
     private void Advance(EndDialogueEvent e)
     {
-        ++e.taskInfo.state;
-
         switch (e.taskInfo.state)
         {
             case 1:

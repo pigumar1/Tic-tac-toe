@@ -574,6 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d21132221bfc374ebd140ab154cf5c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 493025049}
 --- !u!1 &140540540
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,6 +1036,7 @@ MonoBehaviour:
   speaker: {fileID: 171311082}
   line: {fileID: 1709605660}
   playerTalkButtonCanvasGroup: {fileID: 1882952825}
+  skipButton: {fileID: 1726206841}
 --- !u!225 &230979476
 CanvasGroup:
   m_ObjectHideFlags: 0
