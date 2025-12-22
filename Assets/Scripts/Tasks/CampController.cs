@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ public class CampController : DelayedMonoBehaviour
 {
     const float duration = 0.5f;
 
+    [Header("Tutorial完成前")]
     [SerializeField] DialogueParagraph startParagraph;
     [SerializeField] CanvasGroup[] boardCanvasGroups;
     [SerializeField] GameObject[] game1Pieces;
@@ -18,16 +20,25 @@ public class CampController : DelayedMonoBehaviour
 
     [Header("Tutorial完成后")]
     [SerializeField] EventTrigger yangYangEventTrigger;
+    [SerializeField] CanvasGroup classButtonCanvasGroup;
 
     private void Start()
     {
-        if (TaskManager.instance.CompletedTask(TaskID.Tutorial, out _))
+        classButtonCanvasGroup.GetComponent<TextMeshProUGUI>().text = "井底战术课程<size=72>(1/2)</size>";
+
+        if (TaskManager.instance.CompletedTask(TaskID.Tutorial1, out _))
         {
             Image yangYangImage = yangYangEventTrigger.GetComponent<Image>();
 
             yangYangImage.color = Color.white;
             yangYangImage.enabled = true;
             yangYangEventTrigger.GetComponent<RectTransform>().anchoredPosition = new Vector2(811, 640);
+        }
+        else
+        {
+            classButtonCanvasGroup.alpha = 0;
+            classButtonCanvasGroup.interactable = false;
+            classButtonCanvasGroup.blocksRaycasts = false;
         }
     }
 
@@ -37,7 +48,7 @@ public class CampController : DelayedMonoBehaviour
         EventBus.Subscribe<BeginDialogueEvent>(HandleBeginDialogueEvent);
         EventBus.Subscribe<EndDialogueEvent>(HandleEndDialogueEvent);
 
-        if (TaskManager.instance.inProgressTasks.TryGetValue(TaskID.Tutorial, out TaskInfo taskInfo))
+        if (TaskManager.instance.inProgressTasks.TryGetValue(TaskID.Tutorial1, out TaskInfo taskInfo))
         {
             EventBus.Subscribe<CompleteTaskEvent>(OnTaskCompleted);
 
@@ -223,8 +234,12 @@ public class CampController : DelayedMonoBehaviour
     {
         switch (e.id)
         {
-            case TaskID.Tutorial:
+            case TaskID.Tutorial1:
                 {
+                    classButtonCanvasGroup.interactable = true;
+                    classButtonCanvasGroup.blocksRaycasts = true;
+                    classButtonCanvasGroup.DOFade(1, 1);
+
                     break;
                 }
         }

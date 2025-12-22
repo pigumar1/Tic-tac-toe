@@ -88,16 +88,16 @@ public class SaveData
 {
     public string playerName;
     public string sceneName;
-    [SerializeField] List<int> notStartedTasks = new List<int>
-    {
-        (int)TaskID.Tutorial
-    };
+    [SerializeField] List<int> notStartedTasks;
 
     [SerializeField] List<TaskInfo> inProgressTasks = new List<TaskInfo>();
 
     public SaveData(string playerName)
     {
         this.playerName = playerName;
+
+        int count = Enum.GetValues(typeof(TaskID)).Length;
+        notStartedTasks = Enumerable.Range(0, count).ToList();
     }
 
     public void ReadTasks()

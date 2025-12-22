@@ -12,6 +12,9 @@ public class TaskManager : MonoBehaviour
     public HashSet<TaskID> notStartedTasks;
     public Dictionary<TaskID, TaskInfo> inProgressTasks;
 
+    [Header("ÈÎÎñÃû")]
+    public string[] taskNames;
+
     private void Awake()
     {
         if (instance == null)
@@ -54,7 +57,8 @@ public class TaskManager : MonoBehaviour
 
 public enum TaskID
 {
-    Tutorial
+    Tutorial1,
+    Tutorial2
 }
 
 [Serializable]

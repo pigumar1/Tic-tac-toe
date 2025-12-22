@@ -147,6 +147,15 @@ public class DialogueUI : UIBase
 
         switch (node.speaker)
         {
+            case "NewTask":
+                {
+                    EventBus.Publish(new NewTaskEvent
+                    {
+                        id = (TaskID)nodeFirstIntArg.Invoke()
+                    });
+
+                    break;
+                }
             case "CompleteTask":
                 {
                     EventBus.Publish(new CompleteTaskEvent

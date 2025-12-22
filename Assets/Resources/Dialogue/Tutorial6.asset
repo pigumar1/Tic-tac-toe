@@ -57,5 +57,8 @@ MonoBehaviour:
   - speaker: CompleteTask
     lines:
     - 0
+  - speaker: NewTask
+    lines:
+    - 1
   next: {fileID: 0}
   stateMod: 

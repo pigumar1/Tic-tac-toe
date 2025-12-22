@@ -93,7 +93,9 @@ public class TTTGameControllerCore : MonoBehaviour
         {
             Debug.Assert(enemy == agent1);
 
-            int pos = (new int[] { 0, 2, 6, 8 })[Random.Range(0, 4)];
+            int pos =  Random.value < 0.75f
+                ? (new int[] { 0, 2, 6, 8 })[Random.Range(0, 4)]
+                : 4;
             state[pos] = enemy.mark;
             //state = enemy.Move(state, out int _);
 

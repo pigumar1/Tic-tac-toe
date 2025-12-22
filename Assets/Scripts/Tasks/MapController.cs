@@ -16,7 +16,7 @@ public class MapController : DelayedMonoBehaviour
 
     private void Start()
     {
-        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial, out TaskInfo taskInfo))
+        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial1, out TaskInfo taskInfo))
         {
             if (taskInfo == null || taskInfo.state == 0)
             {
@@ -35,11 +35,11 @@ public class MapController : DelayedMonoBehaviour
 
     protected override void DelayedStart(EndSceneTransitionEvent _)
     {
-        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial, out TaskInfo taskInfo))
+        if (!TaskManager.instance.CompletedTask(TaskID.Tutorial1, out TaskInfo taskInfo))
         {
             if (taskInfo == null)
             {
-                taskInfo = TaskManager.instance.StartTask(TaskID.Tutorial, startParagraph.id);
+                taskInfo = TaskManager.instance.StartTask(TaskID.Tutorial1, startParagraph.id);
 
                 EventBus.Subscribe<EndDialogueEvent>(Advance);
                 EventBus.Publish(new BeginDialogueEvent(taskInfo));

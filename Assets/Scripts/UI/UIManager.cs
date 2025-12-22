@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
 
     UIBase[] uiList;
     Dictionary<Type, UIBase> uiMap = new Dictionary<Type, UIBase>();
-    Stack<UIBase> uiStack = new Stack<UIBase>();
+    //Stack<UIBase> uiStack = new Stack<UIBase>();
 
     private void Awake()
     {
@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviour
         {
             UIBase ui = uiMap[e.GetUIType()];
 
-            uiStack.Push(ui);
+            //uiStack.Push(ui);
         });
     }
 }
