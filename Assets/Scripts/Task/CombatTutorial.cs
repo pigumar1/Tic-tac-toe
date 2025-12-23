@@ -46,6 +46,13 @@ public class CombatTutorial : DelayedMonoBehaviour
         EventBus.Unsubscribe<GeneralEvent>(HandleGeneralEvent);
     }
 
+    public void OnXiaYanDied()
+    {
+        canvasGroups[0].DOFade(0, duration);
+        combat.HideUI();
+        EventBus.Publish(new DialogueRespondEvent());
+    }
+
     private void HandleGeneralEvent(GeneralEvent e)
     {
         switch (e.eventName)
@@ -69,7 +76,7 @@ public class CombatTutorial : DelayedMonoBehaviour
                 }
             case "attack3":
                 {
-                    canvasGroups[2].DOFade(0, duration);
+                    canvasGroups[7].DOFade(0, duration);
                     canvasGroups[3].DOFade(1, duration);
                     canvasGroups[4].DOFade(1, duration);
                     break;
@@ -112,6 +119,13 @@ public class CombatTutorial : DelayedMonoBehaviour
 
                     break;
                 }
+            case "attack8":
+                {
+                    canvasGroups[2].DOFade(0, duration);
+                    canvasGroups[7].DOFade(1, duration);
+
+                    break;
+                }
             case "show_health":
                 {
                     combat.ShowPlayerEnemyInfo();
@@ -121,6 +135,12 @@ public class CombatTutorial : DelayedMonoBehaviour
             case "tic_tac_toe1":
                 {
                     combat.StartGame();
+
+                    break;
+                }
+            case "complete":
+                {
+                    SceneTransition.To("Camp", Color.black);
 
                     break;
                 }

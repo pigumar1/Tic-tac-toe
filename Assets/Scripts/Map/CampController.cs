@@ -37,6 +37,12 @@ public class CampController : DelayedMonoBehaviour
 
     private void Start()
     {
+        if (TaskManager.instance.inProgressTasks.ContainsKey(TaskID.Tutorial2))
+        {
+            EventBus.Publish(new DialogueRespondEvent());
+            ++numTutorialsCompleted;
+        }
+
         if (TaskManager.instance.CompletedTask(TaskID.Tutorial1))
         {
             Image yangYangImage = yangYangEventTrigger.GetComponent<Image>();

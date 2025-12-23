@@ -33,5 +33,29 @@ MonoBehaviour:
   - speaker: Yield
     lines:
     - tic_tac_toe1
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u5389\u5BB3\uFF01\u4F60\u5B66\u5F97\u5F88\u5FEB\u561B\u3002"
+  - speaker: MoveCharacter
+    lines:
+    - 0
+    - -555
+  - speaker: ShowCharacter
+    lines:
+    - 1
+  - speaker: "\u70B3\u51B0\u6559\u5B98"
+    lines:
+    - "\u4E0D\u8FC7\u771F\u5B9E\u7684\u6218\u6597\u8FD8\u6709\u65F6\u95F4\u9650\u5236\uFF0C\u6BD5\u7ADF\u654C\u4EBA\u53EF\u4E0D\u4F1A\u7B49\u4F60\u601D\u8003\u600E\u4E48\u653B\u51FB\u4ED6\u3002"
+    - "\u4ECA\u5929\u7684\u8BAD\u7EC3\u5C31\u5230\u8FD9\u91CC\u3002\u660E\u5929\u6211\u4EEC\u5C06\u5B8C\u6210\u6240\u6709<b>\u300C\u63D0\u6CF0\u7279\u6218\u6CD5\u300D</b>\u7684\u7406\u8BBA\u90E8\u5206\u3002"
+    - "\u5404\u4F4D\u53EF\u4EE5\u56DE\u5BB6\u4E86\u3002\u8BB0\u5F97\u660E\u5929\u4E0D\u51C6\u8FDF\u5230\u3002"
+  - speaker: PublishAndWaitForRespond
+    lines:
+    - complete
+  - speaker: CompleteTask
+    lines:
+    - 1
+  - speaker: NewTask
+    lines:
+    - 3
   next: {fileID: 0}
   stateMod: 

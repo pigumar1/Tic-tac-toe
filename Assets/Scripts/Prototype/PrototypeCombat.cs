@@ -11,8 +11,8 @@ public class PrototypeCombat : TTTGameControllerCore
     [SerializeField] CanvasGroup enemyCanvasGroup;
     [SerializeField] Image playerHealthImg;
     [SerializeField] Image enemyHealthImg;
-    [SerializeField] Health playerHealth;
-    [SerializeField] Health enemyHealth;
+    [SerializeField] CharacterCombatInfo playerInfo;
+    [SerializeField] CharacterCombatInfo enemyInfo;
 
     public void ShowPlayerEnemyInfo()
     {
@@ -24,6 +24,66 @@ public class PrototypeCombat : TTTGameControllerCore
 
     public void PlayerAttack()
     {
-        enemyHealth.val -= 20;
+        enemyInfo.health -= 20;
+    }
+
+    public void EnemyAttack()
+    {
+        playerInfo.health -= enemyInfo.damage;
+    }
+
+    private void UpdateState()
+    {
+        state[9] = Mathf.CeilToInt((float)playerInfo.health / playerInfo.maxHealth * 5);
+        state[10] = Mathf.CeilToInt((float)enemyInfo.health / enemyInfo.maxHealth * 5);
+    }
+
+    public void HideUI()
+    {
+        playerCanvasGroup.DOFade(0, 0.5f);
+        enemyCanvasGroup.DOFade(0, 0.5f);
+    }
+
+    public override void PostPlayerMove()
+    {
+        if (enemyInfo.health == 0)
+        {
+            onPlayer1Won.Invoke();
+        }
+        else if (playerInfo.health == 0)
+        {
+            onPlayer2Won.Invoke();
+        }
+        else
+        {
+            UpdateState();
+
+            DOVirtual.DelayedCall(turnDelay, () =>
+            {
+                int[] outcome = enemy.Move(state, out int enemyPos);
+                state[enemyPos] = enemy.mark;
+
+                CrossCheck(enemy);
+
+                state = outcome;
+
+                UpdateStateVisual();
+
+                if (enemyInfo.health == 0)
+                {
+                    onPlayer1Won.Invoke();
+                }
+                else if (playerInfo.health == 0)
+                {
+                    onPlayer2Won.Invoke();
+                }
+                else
+                {
+                    UpdateState();
+
+                    SetGridTriggersEnabled(true);
+                }
+            });
+        }
     }
 }

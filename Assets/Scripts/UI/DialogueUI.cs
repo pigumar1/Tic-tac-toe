@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static System.Net.Mime.MediaTypeNames;
 
 public class DialogueUI : UIBase
 {
@@ -50,6 +51,7 @@ public class DialogueUI : UIBase
 
         paragraph = next;
     }
+    int counter;
     #endregion
 
     private void Awake()
@@ -66,6 +68,34 @@ public class DialogueUI : UIBase
 
             StopAllCoroutines();
             StartCoroutine(Fade(false));
+
+            for (; counter < paragraph.dialogueNodes.Count; ++counter)
+            {
+                DialogueNode node = paragraph.dialogueNodes[counter];
+
+                switch (node.speaker)
+                {
+                    case "NewTask":
+                        {
+                            EventBus.Publish(new NewTaskEvent
+                            {
+                                id = (TaskID)int.Parse(node.lines.First())
+                            });
+
+                            break;
+                        }
+                    case "CompleteTask":
+                        {
+                            EventBus.Publish(new CompleteTaskEvent
+                            {
+                                id = (TaskID)int.Parse(node.lines.First())
+                            });
+
+                            break;
+                        }
+                }
+            }
+
             nextParagraph(paragraph.next);
 
             if (paragraph == null)
@@ -103,7 +133,6 @@ public class DialogueUI : UIBase
 
         while (paragraph != null)
         {
-            int counter;
             DialogueParagraph next = paragraph.next;
 
             for (counter = 0; counter < paragraph.dialogueNodes.Count; ++counter)

@@ -26,15 +26,17 @@ public class TTTGameControllerCore : MonoBehaviour
     public UnityEvent onBoardFull;
     public UnityEvent onPlayer1Won;
     public UnityEvent onPlayer2Won;
+    public UnityEvent onPlayerCrossEarly;
+    public UnityEvent onEnemyCrossEarly;
 
     [Header("µ÷ÊÔ")]
-    [SerializeField] GameState gameState;
+    [SerializeField] protected GameState gameState;
     [SerializeField] protected int[] state;
 
     [Header("ÆäËü")]
     public Agent player;
     public Agent enemy;
-    [SerializeField] float turnDelay = 1;
+    [SerializeField] protected float turnDelay = 1;
 
     #region Components
     EventTrigger[] gridTriggers;
@@ -76,7 +78,7 @@ public class TTTGameControllerCore : MonoBehaviour
         EventBus.Unsubscribe<TrainingCompletedEvent>(ResetGame);
     }
 
-    public void ResetGame()
+    public virtual void ResetGame()
     {
         GameStateInit(out gameState, out state, initState, agent1, agent2);
         UpdateStateVisual();
@@ -121,7 +123,7 @@ public class TTTGameControllerCore : MonoBehaviour
         }
     }
 
-    private void CrossCheck(int begin, int end, int type, Agent agent)
+    protected void CrossCheck(int begin, int end, int type, Agent agent)
     {
         for (int i = begin; i < end; ++i)
         {
@@ -129,6 +131,8 @@ public class TTTGameControllerCore : MonoBehaviour
 
             if (Utils.lineMatch(state, line, agent.mark))
             {
+                (agent == player ? onPlayerCrossEarly : onEnemyCrossEarly).Invoke();
+
                 GameObject crossObj = Instantiate(crossPrefabs[type], grids.GetChild(line[1]));
                 Cross cross = crossObj.GetComponent<Cross>();
 
@@ -146,7 +150,7 @@ public class TTTGameControllerCore : MonoBehaviour
         }
     }
 
-    private void CrossCheck(Agent agent)
+    protected void CrossCheck(Agent agent)
     {
         CrossCheck(0, 3, 0, agent);
         CrossCheck(3, 6, 1, agent);
@@ -154,7 +158,7 @@ public class TTTGameControllerCore : MonoBehaviour
         CrossCheck(7, 8, 3, agent);
     }
 
-    void SetGridTriggersEnabled(bool val)
+    protected void SetGridTriggersEnabled(bool val)
     {
         foreach (var gridTrigger in gridTriggers)
         {
@@ -196,6 +200,11 @@ public class TTTGameControllerCore : MonoBehaviour
         UpdateStateVisual();
         SetGridTriggersEnabled(false);
 
+        PostPlayerMove();
+    }
+    
+    public virtual void PostPlayerMove()
+    {
         GameStateCaseAnalysis(ref gameState, judger, state,
             () => onPlayer1Won.Invoke(),
             () => onPlayer2Won.Invoke(),
@@ -232,7 +241,7 @@ public class TTTGameControllerCore : MonoBehaviour
                 });
             });
     }
-    
+
     public void Hint()
     {
         agent1.Move(state, out int pos);

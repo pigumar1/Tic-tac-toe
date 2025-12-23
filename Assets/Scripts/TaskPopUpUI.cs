@@ -15,6 +15,7 @@ public class TaskPopUpUI : UIBase
     [SerializeField] TextMeshProUGUI taskStatus;
 
     Queue<(TaskID, bool)> messages = new Queue<(TaskID, bool)>();
+    HashSet<(TaskID, bool)> messageSet = new HashSet<(TaskID, bool)>();
 
     CanvasGroup canvasGroup;
     Image[] images;
@@ -47,6 +48,7 @@ public class TaskPopUpUI : UIBase
 
     private void OnEnable()
     {
+        messageSet.Clear();
         StartCoroutine(CoroutineUpdate());
     }
 
@@ -55,6 +57,13 @@ public class TaskPopUpUI : UIBase
         while (messages.Count > 0)
         {
             (TaskID id, bool completed) = messages.Dequeue();
+
+            if (messageSet.Contains((id, completed)))
+            {
+                continue;
+            }
+
+            messageSet.Add((id, completed));
 
             taskName.text = TaskManager.instance.taskNames[(int)id];
 

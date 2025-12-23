@@ -698,7 +698,7 @@ GameObject:
   - component: {fileID: 8672590719600747373}
   - component: {fileID: 5412110579371057206}
   - component: {fileID: 2248090820372755822}
-  - component: {fileID: 665467120587554828}
+  - component: {fileID: 1594239829371715339}
   m_Layer: 5
   m_Name: Player Info
   m_TagString: Untagged
@@ -780,7 +780,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &665467120587554828
+--- !u!114 &1594239829371715339
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -789,11 +789,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7223840252796161695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa5f6622b18e22945912265bfd6adb73, type: 3}
+  m_Script: {fileID: 11500000, guid: 52b13b1ce30bd504095c3295e15db17d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rt: {fileID: 6640338573827029346}
-  maxValue: 912
+  maxHealth: 100
+  maxHealthTMP: {fileID: 5451337971730841999}
+  healthTMP: {fileID: 5533392313782133067}
 --- !u!1 &8840912933211048592
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,7 +808,7 @@ GameObject:
   - component: {fileID: 5869498636516573789}
   - component: {fileID: 6881174485619779708}
   - component: {fileID: 2282234961241485855}
-  - component: {fileID: 2909740897467883286}
+  - component: {fileID: 2345924834077214073}
   m_Layer: 5
   m_Name: Enemy Info
   m_TagString: Untagged
@@ -884,7 +886,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &2909740897467883286
+--- !u!114 &2345924834077214073
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -893,11 +895,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8840912933211048592}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa5f6622b18e22945912265bfd6adb73, type: 3}
+  m_Script: {fileID: 11500000, guid: 01740f72af5066f44ad92e0ba3f0e666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rt: {fileID: 1180627139492654744}
-  maxValue: 100
+  maxHealth: 100
 --- !u!1001 &797965549081069593
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1512,6 +1514,36 @@ MonoBehaviour:
   onPlayer2Won:
     m_PersistentCalls:
       m_Calls: []
+  onPlayerCrossEarly:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2148599976328056471}
+        m_TargetAssemblyTypeName: PrototypeCombat, Assembly-CSharp
+        m_MethodName: PlayerAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onEnemyCrossEarly:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2148599976328056471}
+        m_TargetAssemblyTypeName: PrototypeCombat, Assembly-CSharp
+        m_MethodName: EnemyAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   gameState: 0
   state: 
   player: {fileID: 7793341478285525299}
@@ -1522,8 +1554,8 @@ MonoBehaviour:
   enemyCanvasGroup: {fileID: 2282234961241485855}
   playerHealthImg: {fileID: 8839025487487808327}
   enemyHealthImg: {fileID: 7487631791744637690}
-  playerHealth: {fileID: 665467120587554828}
-  enemyHealth: {fileID: 2909740897467883286}
+  playerInfo: {fileID: 1594239829371715339}
+  enemyInfo: {fileID: 2345924834077214073}
 --- !u!114 &2256752837050490728
 MonoBehaviour:
   m_ObjectHideFlags: 0

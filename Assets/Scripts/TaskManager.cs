@@ -65,7 +65,8 @@ public enum TaskID
 {
     Tutorial1,
     Tutorial2,
-    GameYang
+    GameYang,
+    Tutorial3,
 }
 
 [Serializable]
