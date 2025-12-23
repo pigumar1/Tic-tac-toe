@@ -31,7 +31,7 @@ public class CampController : DelayedMonoBehaviour
         {
             SaveManager.data.numTutorialsCompleted = value;
 
-            classButtonCanvasGroup.GetComponentInChildren<TextMeshProUGUI>().text = $"井底战术课程<size=72>({value.ToString()}/2)</size>";
+            classButtonCanvasGroup.GetComponentInChildren<TextMeshProUGUI>().text = $"井底战术课程<size=72>({value.ToString()}/3)</size>";
         }
     }
 
@@ -60,7 +60,7 @@ public class CampController : DelayedMonoBehaviour
 
         classButtonCanvasGroup.AddComponent<DisableOnDialogueEvent>();
 
-        classButtonCanvasGroup.GetComponentInChildren<TextMeshProUGUI>().text = $"井底战术课程<size=72>({numTutorialsCompleted.ToString()}/2)</size>";
+        classButtonCanvasGroup.GetComponentInChildren<TextMeshProUGUI>().text = $"井底战术课程<size=72>({numTutorialsCompleted.ToString()}/3)</size>";
     }
 
     protected override void DelayedStart(EndSceneTransitionEvent _)
@@ -287,7 +287,14 @@ public class CampController : DelayedMonoBehaviour
 
     public void OnClassButtonClick()
     {
-        SceneTransition.To("Combat Tutorial", Color.black);
+        if (TaskManager.instance.CompletedTask(TaskID.Tutorial2))
+        {
+            SceneTransition.To("Temp Skill Tutorial", Color.black);
+        }
+        else
+        {
+            SceneTransition.To("Combat Tutorial", Color.black);
+        }
     }
 
     void HandleBeginDialogueEvent(BeginDialogueEvent _)

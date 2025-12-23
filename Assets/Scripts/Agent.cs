@@ -96,10 +96,10 @@ public class Agent : MonoBehaviour
     {
         epsilon = Math.Max(0.01, epsilon * decay);
 
-        if (epsilon < 0.011)
-        {
-            Debug.LogWarning("epsilon已降至0.01");
-        }
+        //if (epsilon < 0.011)
+        //{
+        //    Debug.LogWarning("epsilon已降至0.01");
+        //}
     }
 }
 

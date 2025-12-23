@@ -14,6 +14,12 @@ public class PrototypeCombat : TTTGameControllerCore
     [SerializeField] CharacterCombatInfo playerInfo;
     [SerializeField] CharacterCombatInfo enemyInfo;
 
+    [Header("¡Ÿ ±")]
+    [SerializeField] bool useSkill = false;
+    [SerializeField] int skillPower = 0;
+    [SerializeField] TextMeshProUGUI tm;
+    bool powered = false;
+
     public void ShowPlayerEnemyInfo()
     {
         playerHealthImg.color = player.color;
@@ -46,6 +52,15 @@ public class PrototypeCombat : TTTGameControllerCore
 
     public override void PostPlayerMove()
     {
+        #region temp
+        if (powered)
+        {
+            powered = false;
+            SetGridTriggersEnabled(true);
+            return;
+        }
+        #endregion
+
         if (enemyInfo.health == 0)
         {
             onPlayer1Won.Invoke();
@@ -82,8 +97,30 @@ public class PrototypeCombat : TTTGameControllerCore
                     UpdateState();
 
                     SetGridTriggersEnabled(true);
+
+                    if (useSkill)
+                    {
+                        ++skillPower;
+                        if (skillPower == 3)
+                        {
+                            tm.color = Color.black;
+                            StartCoroutine(SkillCheck());
+                        }
+                    }
                 }
             });
         }
+    }
+
+    IEnumerator SkillCheck()
+    {
+        while (!Input.GetMouseButtonDown(1))
+        {
+            yield return null;
+        }
+
+        skillPower = 0;
+        powered = true;
+        tm.color = Color.red;
     }
 }
