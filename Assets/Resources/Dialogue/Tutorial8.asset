@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa6b75b2c05435e42bc0645b24a704f2, type: 3}
+  m_Name: Tutorial8
+  m_EditorClassIdentifier: 
+  id: 10
+  dialogueNodes:
+  - speaker: PublishAndWaitForRespond
+    lines:
+    - board_appear
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u2014\u2014\u770B\u5427\uFF01\n\u4E95\u5B57\u68CB\u68CB\u76D8\u5728\u6211\u9762\u524D\u51FA\u73B0\u4E86\u5427\uFF01<continue>"
+  - speaker: ShowOptions
+    lines:
+    - "\u771F\u662F\u4E0D\u53EF\u601D\u8BAE\u3002"
+    - 
+  - speaker: Publish
+    lines:
+    - attack1
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u4F60\u4EEC\u7684\u6BCF\u4E00\u6B21\u653B\u51FB\u90FD\u53EF\u4EE5\u770B\u6210\u5728\u8FD9\u4E2A\u68CB\u76D8\u4E0A\u843D\u5B50\u3002"
+  - speaker: Publish
+    lines:
+    - attack2
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u5982\u679C\u653B\u51FB<b>\u6563\u4E71\u65E0\u7AE0</b>\uFF0C\u5C31\u5F88\u96BE\u5BF9\u654C\u4EBA\u9020\u6210\u591A\u5C11\u53EF\u89C2\u7684\u4F24\u5BB3\u3002"
+  - speaker: Publish
+    lines:
+    - attack3
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u4F46\u5982\u679C\u80FD<b>\u96C6\u4E2D\u529B\u91CF</b>\u2014\u2014"
+  - speaker: Publish
+    lines:
+    - attack4
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u5C31\u53EF\u4EE5\u5BF9\u654C\u4EBA\u6253\u51FA\u4F1A\u5FC3\u4E00\u51FB\uFF01"
+  - speaker: Publish
+    lines:
+    - attack5
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u751A\u81F3\u5982\u679C\u518D\u7528\u4E0A\u5934\u8111\u7684\u8BDD\uFF0C\u6253\u7740\u6253\u7740\u53EF\u80FD\u4F1A\u51FA\u73B0\u8FD9\u6837\u7684\u60C5\u51B5\uFF01"
+  - speaker: Publish
+    lines:
+    - attack6
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u54C7\u5494\u5494\u5494\u5494\u5494\uFF01"
+    - "\u53EF\u6076\u554A\uFF01\u5C31\u9760\u6211\u5728\u8FD9\u91CC\u53ED\u53ED\u6709\u4EC0\u4E48\u723D\u7684\uFF01\n\u679C\u7136\u8FD8\u662F\u8981\u6293\u4E2A\u4EBA\u4E0A\u6765\u8BD5\u8BD5\u554A\uFF01"
+    - "\u4F60\u53EB<player>\u5BF9\u5427\uFF1F\u4E0A\u5348\u8868\u73B0\u5F88\u597D\u561B\uFF01\n\u5C31\u51B3\u5B9A\u662F\u4F60\u4E86\uFF01\u6765\u4E2A\u6709\u59CB\u6709\u7EC8\uFF01<continue>"
+  - speaker: ShowOptions
+    lines:
+    - "\uFF08\u65E0\u8BED\u5730\u51FA\u5217\uFF09"
+    - 
+  - speaker: Publish
+    lines:
+    - attack7
+  next: {fileID: 11400000, guid: 17f4c5f0be33d724986104328e82c63b, type: 2}
+  stateMod: 

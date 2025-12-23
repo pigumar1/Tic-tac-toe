@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -69,7 +70,7 @@ public class DialogueUI : UIBase
 
             if (paragraph == null)
             {
-                EndDialogue();
+                gameObject.SetActive(false);
             }
 
             SceneTransition.To(SceneManager.GetActiveScene().name, Color.black);
@@ -117,19 +118,19 @@ public class DialogueUI : UIBase
 
         yield return StartCoroutine(Fade(false));
 
-        EndDialogue();
+        gameObject.SetActive(false);
     }
 
-    void EndDialogue()
+    private void OnDisable()
     {
+        EventBus.Publish(new HideUIEvent());
+
         EventBus.Publish(new EndDialogueEvent
         {
             taskInfo = taskInfo
         });
 
         taskInfo = null;
-
-        gameObject.SetActive(false);
     }
 
     IEnumerator Fade(bool fadeIn)
@@ -147,6 +148,17 @@ public class DialogueUI : UIBase
 
         switch (node.speaker)
         {
+            case "Yield":
+                {
+                    yield return StartCoroutine(Fade(false));
+
+                    node.speaker = "PublishAndWaitForRespond";
+                    yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
+
+                    yield return StartCoroutine(Fade(true));
+
+                    break;
+                }
             case "NewTask":
                 {
                     EventBus.Publish(new NewTaskEvent
@@ -350,8 +362,10 @@ public class DialogueUI : UIBase
                                     }
                                 }
 
-                                if (!hitButton && Input.GetMouseButtonDown(0))
+                                if (UIManager.Top() == this && !hitButton && Input.GetMouseButtonDown(0))
+                                {
                                     break;
+                                }
 
                                 yield return null;
                             }

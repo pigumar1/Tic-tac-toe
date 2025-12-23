@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class TaskManager : MonoBehaviour
@@ -49,7 +50,12 @@ public class TaskManager : MonoBehaviour
         return !notStartedTasks.Contains(id) && !inProgressTasks.TryGetValue(id, out taskInfo);
     }
 
-    void CompleteTask(CompleteTaskEvent e)
+    public bool CompletedTask(TaskID id)
+    {
+        return !notStartedTasks.Contains(id) && !inProgressTasks.ContainsKey(id);
+    }
+
+    private void CompleteTask(CompleteTaskEvent e)
     {
         inProgressTasks.Remove(e.id);
     }
@@ -58,7 +64,8 @@ public class TaskManager : MonoBehaviour
 public enum TaskID
 {
     Tutorial1,
-    Tutorial2
+    Tutorial2,
+    GameYang
 }
 
 [Serializable]

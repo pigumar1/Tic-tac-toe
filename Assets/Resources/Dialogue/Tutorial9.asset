@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa6b75b2c05435e42bc0645b24a704f2, type: 3}
+  m_Name: Tutorial9
+  m_EditorClassIdentifier: 
+  id: 11
+  dialogueNodes:
+  - speaker: Publish
+    lines:
+    - show_health
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u653E\u5FC3\uFF0C\u6211\u4F1A\u5F88\u6E29\u67D4\u7684~<continue>"
+  - speaker: ShowOptions
+    lines:
+    - "\uFF08\u53D1\u81EA\u5185\u5FC3\u5730\u76F8\u4FE1\uFF09"
+    - 
+  - speaker: "\u590F\u71D5\u6559\u5B98"
+    lines:
+    - "\u54E6\uFF01\u5DEE\u70B9\u5FD8\u4E86\uFF01"
+    - "\u70B3\u51B0\u4E0A\u5348\u8BB2\u8FC7\uFF0C\u4E95\u5B57\u68CB\u91CC\uFF0C\n<b>\u89D2</b>\u662F\u975E\u5E38\u91CD\u8981\u7684<b>\u8FDB\u653B</b>\u4F4D\u7F6E\u3002\n<b>\u4E2D\u5FC3</b>\u5219\u662F\u975E\u5E38\u91CD\u8981\u7684<b>\u9632\u5B88</b>\u4F4D\u7F6E\u3002"
+    - "\u5BF9\u5E94\u771F\u6B63\u7684<b>\u8FDB\u653B</b>\u548C<b>\u9632\u5B88</b>\u4E5F\u4E00\u6837\u3002\n\u80FD\u628A\u6E38\u620F\u548C\u6218\u6597\u8054\u7CFB\u8D77\u6765\uFF0C<b>\u63D0\u6CF0\u7279</b>\u771F\u662F\u5929\u624D\u3002"
+    - "\u597D\u4E86\uFF0C\u6765\u4E00\u51B3\u80DC\u8D1F\u5427\uFF01"
+  - speaker: Yield
+    lines:
+    - tic_tac_toe1
+  next: {fileID: 0}
+  stateMod: 

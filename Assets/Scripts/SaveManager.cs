@@ -89,8 +89,9 @@ public class SaveData
     public string playerName;
     public string sceneName;
     [SerializeField] List<int> notStartedTasks;
-
     [SerializeField] List<TaskInfo> inProgressTasks = new List<TaskInfo>();
+    public int numTutorialsCompleted = 0;
+    public int playerMaxHealth = 912;
 
     public SaveData(string playerName)
     {

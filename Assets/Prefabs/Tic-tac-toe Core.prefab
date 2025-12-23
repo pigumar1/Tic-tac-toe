@@ -54,6 +54,7 @@ MonoBehaviour:
   epsilon: 0.1
   decay: 0.99992
   alpha: 0.1
+  color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &4763306574893516300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +139,36 @@ MonoBehaviour:
   onBoardFull:
     m_PersistentCalls:
       m_Calls: []
+  onPlayer1Won:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4347408508244612289}
+        m_TargetAssemblyTypeName: TTTGameControllerCore, Assembly-CSharp
+        m_MethodName: EndGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onPlayer2Won:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4347408508244612289}
+        m_TargetAssemblyTypeName: TTTGameControllerCore, Assembly-CSharp
+        m_MethodName: EndGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   gameState: 0
   state: 
   player: {fileID: 7436977598036232490}
@@ -250,6 +281,7 @@ MonoBehaviour:
   valueMatrixShape: 030000000300000003000000030000000300000003000000030000000300000003000000
   initState: 000000000000000000000000000000000000000000000000000000000000000000000000
   judger: {fileID: 0}
+  log: 0
 --- !u!1 &8621359949751774481
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,6 +336,7 @@ MonoBehaviour:
   epsilon: 0.1
   decay: 0.99992
   alpha: 0.1
+  color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &9030096423225029082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -616,26 +649,6 @@ PrefabInstance:
     - target: {fileID: 5942237845770397691, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117565294424456345, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.92387956
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117565294424456345, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117565294424456345, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117565294424456345, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.38268343
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117565294424456345, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 6625309241602187069, guid: ea5a267e9f899f54cb932357a072ff02, type: 3}
       propertyPath: m_AnchorMax.y

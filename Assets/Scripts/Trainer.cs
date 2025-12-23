@@ -15,7 +15,9 @@ public class Trainer : MonoBehaviour
     [Header("³õÊ¼×´Ì¬")]
     [SerializeField] protected int[] initState;
 
+    [Header("ÆäËü")]
     public Judger judger;
+    [SerializeField] bool log = false;
 
     // Start is called before the first frame update
     void Start()
@@ -81,7 +83,10 @@ public class Trainer : MonoBehaviour
                     }
                 }
 
-                Debug.Log($"[{i - 1000} ~ {i}]  Agent1: {w1}  Agent2: {w2}  Draw: {d}");
+                if (log)
+                {
+                    Debug.Log($"[{i - 1000} ~ {i}]  Agent1: {w1}  Agent2: {w2}  Draw: {d}");
+                }
             }
         }
 

@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Camp.unity
     guid: 70579b3b551821e4998d1287e74fe893
+  - enabled: 1
+    path: Assets/Scenes/Combat Tutorial.unity
+    guid: cc4a92aa12b32c0468db42a4a4a155e5
   m_configObjects: {}

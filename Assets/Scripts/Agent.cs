@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Agent : MonoBehaviour
 {
@@ -22,9 +23,15 @@ public class Agent : MonoBehaviour
     public ValueMatrix valueMatrix;
     int[] storedOutcome;
     OutcomeCandidateGen outcomeCandidateGen;
+    public Color color;
 
     // Start is called before the first frame update
-    void Awake() => EventBus.Subscribe<TrainingCompletedEvent>(OnTrainingCompleted);
+    void Awake()
+    {
+        EventBus.Subscribe<TrainingCompletedEvent>(OnTrainingCompleted);
+
+        color = markObj.GetComponentInChildren<Image>(true).color;
+    } 
 
     private void OnDestroy() => EventBus.Unsubscribe<TrainingCompletedEvent>(OnTrainingCompleted);
 
@@ -89,10 +96,10 @@ public class Agent : MonoBehaviour
     {
         epsilon = Math.Max(0.01, epsilon * decay);
 
-        //if (epsilon < 0.011)
-        //{
-        //    Debug.LogWarning("epsilon已降至0.01");
-        //}
+        if (epsilon < 0.011)
+        {
+            Debug.LogWarning("epsilon已降至0.01");
+        }
     }
 }
 

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
 public class TTTGameControllerCore : MonoBehaviour
 {
@@ -19,12 +18,14 @@ public class TTTGameControllerCore : MonoBehaviour
     [SerializeField] Transform grids;
     [SerializeField] int[] initState;
 
-    [Header("划线")]
+    [Header("结果")]
     [SerializeField] GameObject[] crossPrefabs;
     [SerializeField] bool crossHalf = false;
     public UnityEvent onPlayerCross;
     public UnityEvent onEnemyCross;
     public UnityEvent onBoardFull;
+    public UnityEvent onPlayer1Won;
+    public UnityEvent onPlayer2Won;
 
     [Header("调试")]
     [SerializeField] GameState gameState;
@@ -103,6 +104,12 @@ public class TTTGameControllerCore : MonoBehaviour
         }
     }
 
+    public void EndGame()
+    {
+        boardCanvasGroup.interactable = false;
+        boardCanvasGroup.blocksRaycasts = false;
+    }
+
     protected virtual void UpdateStateVisual()
     {
         for (int pos = 0; pos < 9; ++pos)
@@ -125,7 +132,7 @@ public class TTTGameControllerCore : MonoBehaviour
                 GameObject crossObj = Instantiate(crossPrefabs[type], grids.GetChild(line[1]));
                 Cross cross = crossObj.GetComponent<Cross>();
 
-                cross.color = agent.markObj.GetComponentInChildren<Image>(true).color;
+                cross.color = agent.color;
 
                 Sequence sequence = DOTween.Sequence();
 
@@ -181,36 +188,41 @@ public class TTTGameControllerCore : MonoBehaviour
 
         CrossCheck(player);
 
-        //if (outcomeDecorator)
-        //{
-        //    state = outcomeDecorator.Apply(state, mockPlayer.mark).First();
-        //}
+        if (outcomeDecorator)
+        {
+            state = outcomeDecorator.Apply(state, player.mark).First();
+        }
 
         UpdateStateVisual();
         SetGridTriggersEnabled(false);
 
         GameStateCaseAnalysis(ref gameState, judger, state,
-            () => { },
-            () => { },
+            () => onPlayer1Won.Invoke(),
+            () => onPlayer2Won.Invoke(),
             () =>
             {
+                EndGame();
                 onBoardFull.Invoke();
             },
             () =>
             {
                 DOVirtual.DelayedCall(turnDelay, () =>
                 {
-                    state = enemy.Move(state, out int enemyPos);
+                    int[] outcome = enemy.Move(state, out int enemyPos);
+                    state[enemyPos] = enemy.mark;
 
                     CrossCheck(enemy);
+
+                    state = outcome;
 
                     UpdateStateVisual();
 
                     GameStateCaseAnalysis(ref gameState, judger, state,
-                        () => { },
-                        () => { },
+                        () => onPlayer1Won.Invoke(),
+                        () => onPlayer2Won.Invoke(),
                         () =>
                         {
+                            EndGame();
                             onBoardFull.Invoke();
                         },
                         () =>

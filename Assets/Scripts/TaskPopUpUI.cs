@@ -78,19 +78,17 @@ public class TaskPopUpUI : UIBase
             Sequence sequence = DOTween.Sequence();
 
             sequence.Append(canvasGroup.DOFade(1, 0.5f));
-            sequence.AppendInterval(3);
+            sequence.AppendInterval(2);
             sequence.Append(canvasGroup.DOFade(0, 1));
 
-            yield return new WaitForSeconds(0.5f + 3 + 1);
+            yield return new WaitForSeconds(0.5f + 2 + 1);
         }
 
         gameObject.SetActive(false);
     }
 }
 
-public class NewTaskEvent : ShowUIEvent
+public struct NewTaskEvent
 {
     public TaskID id;
-
-    public override Type GetUIType() => typeof(TaskPopUpUI);
 }
