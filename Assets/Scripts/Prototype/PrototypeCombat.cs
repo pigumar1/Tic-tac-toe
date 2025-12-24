@@ -13,12 +13,20 @@ public class PrototypeCombat : TTTGameControllerCore
     [SerializeField] Image enemyHealthImg;
     [SerializeField] CharacterCombatInfo playerInfo;
     [SerializeField] CharacterCombatInfo enemyInfo;
+    [SerializeField] Skill[] skills;
+    bool applySkill = false;
 
-    [Header("¡Ÿ ±")]
-    [SerializeField] bool useSkill = false;
-    [SerializeField] int skillPower = 0;
-    [SerializeField] TextMeshProUGUI tm;
-    bool powered = false;
+    protected override void Awake()
+    {
+        base.Awake();
+
+        EventBus.Subscribe<ApplySkillEvent>(OnApplySkillEvent);
+    }
+
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe<ApplySkillEvent>(OnApplySkillEvent);
+    }
 
     public void ShowPlayerEnemyInfo()
     {
@@ -52,14 +60,12 @@ public class PrototypeCombat : TTTGameControllerCore
 
     public override void PostPlayerMove()
     {
-        #region temp
-        if (powered)
+        if (applySkill)
         {
-            powered = false;
+            applySkill = false;
             SetGridTriggersEnabled(true);
             return;
         }
-        #endregion
 
         if (enemyInfo.health == 0)
         {
@@ -98,29 +104,17 @@ public class PrototypeCombat : TTTGameControllerCore
 
                     SetGridTriggersEnabled(true);
 
-                    if (useSkill)
+                    foreach (var skill in skills)
                     {
-                        ++skillPower;
-                        if (skillPower == 3)
-                        {
-                            tm.color = Color.black;
-                            StartCoroutine(SkillCheck());
-                        }
+                        skill.Incr();
                     }
                 }
             });
         }
     }
 
-    IEnumerator SkillCheck()
+    private void OnApplySkillEvent(ApplySkillEvent e)
     {
-        while (!Input.GetMouseButtonDown(1))
-        {
-            yield return null;
-        }
-
-        skillPower = 0;
-        powered = true;
-        tm.color = Color.red;
+        applySkill = true;
     }
 }

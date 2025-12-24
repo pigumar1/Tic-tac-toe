@@ -289,7 +289,7 @@ public class CampController : DelayedMonoBehaviour
     {
         if (TaskManager.instance.CompletedTask(TaskID.Tutorial2))
         {
-            SceneTransition.To("Temp Skill Tutorial", Color.black);
+            SceneTransition.To("Skill Tutorial", Color.black);
         }
         else
         {

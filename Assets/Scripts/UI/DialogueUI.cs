@@ -123,6 +123,11 @@ public class DialogueUI : UIBase
         StartCoroutine(CoroutineUpdate(e));
     }
 
+    private void Jump(int newCounter)
+    {
+        counter = newCounter - 1;
+    }
+
     IEnumerator CoroutineUpdate(BeginDialogueEvent e)
     {
         taskInfo = e.taskInfo;
@@ -137,7 +142,6 @@ public class DialogueUI : UIBase
             for (counter = 0; counter < paragraph.dialogueNodes.Count; ++counter)
             {
                 yield return StartCoroutine(HandleDialogueNode(paragraph.dialogueNodes[counter],
-                    newCounter => counter = newCounter - 1,
                     id => next = dialogueDatabase[id]));
             }
 
@@ -170,7 +174,7 @@ public class DialogueUI : UIBase
         yield return new WaitForSeconds(duration);
     }
 
-    IEnumerator HandleDialogueNode(DialogueNode node, Action<int> jump, Action<int> setNext)
+    IEnumerator HandleDialogueNode(DialogueNode node, Action<int> setNext)
     {
         Func<int> nodeFirstIntArg = () => int.Parse(node.lines.First());
 
@@ -181,7 +185,7 @@ public class DialogueUI : UIBase
                     yield return StartCoroutine(Fade(false));
 
                     node.speaker = "PublishAndWaitForRespond";
-                    yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
+                    yield return StartCoroutine(HandleDialogueNode(node, setNext));
 
                     yield return StartCoroutine(Fade(true));
 
@@ -235,13 +239,13 @@ public class DialogueUI : UIBase
                     bool locked = true;
 
                     Action<DialogueRespondEvent> unlock = _ => locked = false;
-                    Action<DialogueJumpEvent> onJump = e => jump.Invoke(e.newCounter);
+                    Action<DialogueJumpEvent> onJump = e => Jump(e.newCounter);
 
                     EventBus.Subscribe(unlock);
                     EventBus.Subscribe(onJump);
 
                     node.speaker = "Publish";
-                    yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
+                    yield return StartCoroutine(HandleDialogueNode(node, setNext));
 
                     while (locked)
                     {
@@ -256,13 +260,13 @@ public class DialogueUI : UIBase
             case "Player":
                 {
                     node.speaker = SaveManager.data.playerName;
-                    yield return StartCoroutine(HandleDialogueNode(node, jump, setNext));
+                    yield return StartCoroutine(HandleDialogueNode(node, setNext));
 
                     break;
                 }
             case "Jump":
                 {
-                    jump(nodeFirstIntArg.Invoke());
+                    Jump(nodeFirstIntArg.Invoke());
 ;
                     break;
                 }
@@ -306,7 +310,7 @@ public class DialogueUI : UIBase
 
                                 button.onClick.AddListener(() =>
                                 {
-                                    jump.Invoke(dest);
+                                    Jump(dest);
                                 });
                             }
 
@@ -369,32 +373,8 @@ public class DialogueUI : UIBase
 
                         if (!cont)
                         {
-                            var eventSystem = EventSystem.current;
-                            var eventData = new PointerEventData(eventSystem);
-                            var results = new List<RaycastResult>();
-
-                            while (true)
+                            while (UIManager.Top() != this || !Input.GetMouseButtonDown(0))
                             {
-                                eventData.position = Input.mousePosition;
-                                results.Clear();
-
-                                eventSystem.RaycastAll(eventData, results);
-
-                                bool hitButton = false;
-                                for (int i = 0; i < results.Count; i++)
-                                {
-                                    if (results[i].gameObject.TryGetComponent<Button>(out _))
-                                    {
-                                        hitButton = true;
-                                        break;
-                                    }
-                                }
-
-                                if (UIManager.Top() == this && !hitButton && Input.GetMouseButtonDown(0))
-                                {
-                                    break;
-                                }
-
                                 yield return null;
                             }
 
@@ -423,14 +403,16 @@ public class BeginDialogueEvent : ShowUIEvent
     {
         this.taskInfo = taskInfo;
         paragraphID = taskInfo.paragraphID;
+
+        uiType = typeof(DialogueUI);
     }
 
     public BeginDialogueEvent(int paragraphID)
     {
         this.paragraphID = paragraphID;
-    }
 
-    public override Type GetUIType() => typeof(DialogueUI);
+        uiType = typeof(DialogueUI);
+    }
 }
 
 public struct EndDialogueEvent

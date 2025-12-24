@@ -14,23 +14,7 @@ public class TempSkillTutorial : DelayedMonoBehaviour
         EventBus.Subscribe<GeneralEvent>(HandleGeneralEvent);
 
         TaskManager.instance.CompletedTask(TaskID.Tutorial3, out TaskInfo taskInfo);
-
-        if (taskInfo == null)
-        {
-            taskInfo = TaskManager.instance.StartTask(TaskID.Tutorial3, startParagraph.id);
-        }
-        else
-        {
-            EventBus.Publish(new DOCharacterEvent("Show", new List<string>
-            {
-                "0",
-            }));
-
-            //if (taskInfo.paragraphID >= 11)
-            //{
-            //    canvasGroups.First().DOFade(1, duration);
-            //}
-        }
+        taskInfo = TaskManager.instance.StartTask(TaskID.Tutorial3, startParagraph.id);
 
         EventBus.Publish(new BeginDialogueEvent(taskInfo));
     }

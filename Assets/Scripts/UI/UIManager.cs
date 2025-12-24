@@ -40,16 +40,17 @@ public class UIManager : MonoBehaviour
 
         EventBus.Subscribe<BeginDialogueEvent>(e =>
         {
-            print("DialogueUI pushed");
-            UIBase ui = uiMap[e.GetUIType()];
+            UIBase ui = uiMap[e.uiType];
 
+            print("Pushed");
             uiStack.Push(ui);
         });
-        EventBus.Subscribe<QuitEvent>(e =>
-        {
-            print("Quitter pushed");
-            UIBase ui = uiMap[e.GetUIType()];
 
+        EventBus.Subscribe<ShowUIEvent>(e =>
+        {
+            UIBase ui = uiMap[e.uiType];
+
+            print("Pushed");
             uiStack.Push(ui);
         });
 
@@ -60,15 +61,27 @@ public class UIManager : MonoBehaviour
         });
     }
 
+    public void PushNull()
+    {
+        print("Pushed Null");
+        uiStack.Push(null);
+    }
+
+    public void HideNull()
+    {
+        print("Popped Null");
+        uiStack.Pop();
+    }
+
     public static UIBase Top()
     {
         return instance.uiStack.Peek();
     }
 }
 
-public abstract class ShowUIEvent
+public class ShowUIEvent
 {
-    public abstract Type GetUIType();
+    public Type uiType;
 }
 
 public struct HideUIEvent { }

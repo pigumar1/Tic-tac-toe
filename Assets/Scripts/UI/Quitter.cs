@@ -19,16 +19,11 @@ public class Quitter : UIBase
 
     private void OnEnable()
     {
-        EventBus.Publish(new QuitEvent());
+        PublishShowUIEvent();
     }
 
     private void OnDisable()
     {
         EventBus.Publish(new HideUIEvent());
     }
-}
-
-public class QuitEvent : ShowUIEvent
-{
-    public override Type GetUIType() => typeof(Quitter);
 }

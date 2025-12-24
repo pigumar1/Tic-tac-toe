@@ -46,10 +46,8 @@ public class TTTGameControllerCore : MonoBehaviour
     #endregion
 
     // Start is called before the first frame update
-    private void Awake()
+    protected virtual void Awake()
     {
-        EventBus.Subscribe<TrainingCompletedEvent>(ResetGame);
-
         gridTriggers = new EventTrigger[grids.childCount];
         for (int i = 0; i < grids.childCount; ++i)
         {
@@ -71,6 +69,8 @@ public class TTTGameControllerCore : MonoBehaviour
 
         outcomeDecorator = GetComponent<OutcomeDecorator>();
         judger = GetComponent<Judger>();
+
+        ResetGame();
     }
 
     private void Start()
@@ -79,19 +79,12 @@ public class TTTGameControllerCore : MonoBehaviour
         ML.SetActive(true);
     }
 
-    private void OnDestroy()
-    {
-        EventBus.Unsubscribe<TrainingCompletedEvent>(ResetGame);
-    }
-
     public virtual void ResetGame()
     {
         GameStateInit(out gameState, out state, initState, agent1, agent2);
         UpdateStateVisual();
         SetGridTriggersEnabled(true);
     }
-
-    void ResetGame(TrainingCompletedEvent _) => ResetGame();
 
     public void StartGame()
     {
