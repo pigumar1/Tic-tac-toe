@@ -59,7 +59,13 @@ public class TTTGameControllerCore : MonoBehaviour
 
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerClick;
-            entry.callback.AddListener(_ => PlayerMove(pos));
+            entry.callback.AddListener(data =>
+            {
+                if (data is PointerEventData pointer && pointer.button == PointerEventData.InputButton.Left)
+                {
+                    PlayerMove(pos);
+                }
+            });
             gridTriggers[i].triggers.Add(entry);
         }
 
