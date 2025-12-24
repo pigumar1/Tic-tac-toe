@@ -33,30 +33,30 @@ public class CharacterPortraitManager : MonoBehaviour
 
     private void Handle(DOCharacterEvent e)
     {
-        Action<Color> doColor = color =>
-        {
-            Image portrait = portraits[e.id];
-
-            portrait.enabled = true;
-            portrait.DOColor(color, 0.5f)
-                .OnComplete(() => e.completed = true);
-        };
+        Image portrait = portraits[e.id];
 
         switch (e.eventType)
         {
             case "Show":
                 {
-                    doColor(Color.white);
+                    portrait.enabled = true;
+                    portrait.DOColor(Color.white, 0.5f)
+                        .OnComplete(() => e.completed = true);
                     break;
                 }
             case "Hide":
                 {
-                    doColor(Color.clear);
+                    portrait.DOColor(Color.clear, 0.5f)
+                        .OnComplete(() =>
+                        {
+                            e.completed = true;
+                            portrait.enabled = false;
+                        });
                     break;
                 }
             case "Move":
                 {
-                    portraits[e.id].GetComponent<RectTransform>().DOAnchorPosX(e.args.First(), 1)
+                    portrait.GetComponent<RectTransform>().DOAnchorPosX(e.args.First(), 1)
                         .OnComplete(() => e.completed = true);
 
                     break;
