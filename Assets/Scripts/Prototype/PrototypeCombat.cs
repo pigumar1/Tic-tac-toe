@@ -1,7 +1,9 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +20,20 @@ public class PrototypeCombat : TTTGameControllerCore
 
     protected override void Awake()
     {
+        if (player == agent1)
+        {
+            initState[9] = Mathf.CeilToInt((float)SaveManager.data.playerMaxHealth / enemyInfo.damage);
+            initState[10] = Mathf.CeilToInt((float)enemyInfo.maxHealth / playerInfo.damage);
+        }
+        else
+        {
+            initState[9] = Mathf.CeilToInt((float)enemyInfo.maxHealth / playerInfo.damage);
+            initState[10] = Mathf.CeilToInt((float)SaveManager.data.playerMaxHealth / enemyInfo.damage);
+        }
+
+        trainer.rewarder1 = outcome => outcome[9] - outcome[10];
+        trainer.rewarder2 = state => state[10] - state[9];
+
         base.Awake();
 
         EventBus.Subscribe<ApplySkillEvent>(OnApplySkillEvent);
@@ -36,9 +52,53 @@ public class PrototypeCombat : TTTGameControllerCore
         enemyCanvasGroup.DOFade(1, 0.75f);
     }
 
+    private void Explode(int pos)
+    {
+        state[pos] = 0;
+
+        Transform grid = grids.GetChild(pos);
+        GameObject gameObj = Instantiate(grid.GetChild(0).gameObject, grid);
+
+        gameObj.AddComponent<CanvasGroup>().DOFade(0, 1);
+        gameObj.transform.DOScale(2f, 1.01f)
+            .OnComplete(() => Destroy(gameObj));
+    }
+
+    protected override void DrawBreaker(HashSet<int> posWithTheMark)
+    {
+        bool agentIsPlayer = state[posWithTheMark.First()] == player.mark;
+
+        if (agentIsPlayer && posWithTheMark.Count >= 5)
+        {
+            PlayerAttack();
+        }
+        else
+        {
+            EnemyAttack();
+        }
+
+        if (posWithTheMark.Count >= 5)
+        {
+            foreach (var pos in posWithTheMark)
+            {
+                Explode(pos);
+            }
+        }
+        else
+        {
+            for (int pos = 0; pos < 9; ++pos)
+            {
+                if (!posWithTheMark.Contains(pos))
+                {
+                    Explode(pos);
+                }
+            }
+        }
+    }
+
     public void PlayerAttack()
     {
-        enemyInfo.health -= 20;
+        enemyInfo.health -= playerInfo.damage;
     }
 
     public void EnemyAttack()
@@ -48,8 +108,16 @@ public class PrototypeCombat : TTTGameControllerCore
 
     private void UpdateState()
     {
-        state[9] = Mathf.CeilToInt((float)playerInfo.health / playerInfo.maxHealth * 5);
-        state[10] = Mathf.CeilToInt((float)enemyInfo.health / enemyInfo.maxHealth * 5);
+        if (player == agent1)
+        {
+            state[9] = Mathf.CeilToInt((float)playerInfo.health / playerInfo.maxHealth * initState[9]);
+            state[10] = Mathf.CeilToInt((float)enemyInfo.health / enemyInfo.maxHealth * initState[10]);
+        }
+        else
+        {
+            state[9] = Mathf.CeilToInt((float)enemyInfo.health / enemyInfo.maxHealth * initState[9]);
+            state[10] = Mathf.CeilToInt((float)playerInfo.health / playerInfo.maxHealth * initState[10]);
+        }
     }
 
     public void HideUI()
@@ -84,7 +152,7 @@ public class PrototypeCombat : TTTGameControllerCore
                 int[] outcome = enemy.Move(state, out int enemyPos);
                 state[enemyPos] = enemy.mark;
 
-                CrossCheck(enemy);
+                Check(enemy);
 
                 state = outcome;
 

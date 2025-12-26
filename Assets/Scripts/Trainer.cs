@@ -13,11 +13,14 @@ public class Trainer : MonoBehaviour
     [SerializeField] protected int[] valueMatrixShape;
 
     [Header("³õÊ¼×´Ì¬")]
-    [SerializeField] protected int[] initState;
+    [SerializeField] public int[] initState;
 
     [Header("ÆäËü")]
     public Judger judger;
     [SerializeField] bool log = false;
+
+    public Func<int[], int> rewarder1 = _ => 1;
+    public Func<int[], int> rewarder2 = _ => 1;
 
     // Start is called before the first frame update
     void Start()
@@ -40,14 +43,22 @@ public class Trainer : MonoBehaviour
 
                 Action casePlayer1Won = () =>
                 {
-                    agent1.valueMatrix[outcome] = 1;
-                    agent2.valueMatrix[state] = -1;
+                    int reward = rewarder1.Invoke(outcome);
+
+                    Debug.Assert(reward >= 0);
+
+                    agent1.valueMatrix[outcome] = reward;
+                    agent2.valueMatrix[state] = -reward;
                 };
 
                 Action casePlayer2Won = () =>
                 {
-                    agent2.valueMatrix[state] = 1;
-                    agent1.valueMatrix[outcome] = -1;
+                    int reward = rewarder2.Invoke(state);
+
+                    Debug.Assert(reward >= 0);
+
+                    agent2.valueMatrix[state] = reward;
+                    agent1.valueMatrix[outcome] = -reward;
                 };
 
                 TTTGameControllerCore.GameStateCaseAnalysis(ref gameState, judger, outcome, casePlayer1Won, casePlayer2Won, () => { },

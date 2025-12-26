@@ -11,14 +11,6 @@ public class CombatOutcomeDecorator : OutcomeDecorator
         outcome = (int[])outcome.Clone();
         List<int[]> result = new List<int[]> { outcome };
 
-        System.Action<HashSet<int>> clearGrids = posToClear =>
-        {
-            foreach (var pos in posToClear)
-            {
-                outcome[pos] = 0;
-            }
-        };
-
         System.Action<int> attackAgent = agent =>
         {
             outcome[9 + agent] = Mathf.Max(outcome[9 + agent] - 1, 0);
@@ -30,7 +22,7 @@ public class CombatOutcomeDecorator : OutcomeDecorator
 
         foreach (var line in Utils.lines)
         {
-            if (Utils.lineMatch(outcome, line, mark))
+            if (Utils.LineMatch(outcome, line, mark))
             {
                 posToClear.AddRange(line);
 
@@ -40,28 +32,14 @@ public class CombatOutcomeDecorator : OutcomeDecorator
 
         if (posToClear.Count > 0)
         {
-            clearGrids(posToClear);
+            Utils.ClearGrids(outcome, posToClear);
         }
-        else
+        else if (Utils.Draw(outcome, mark, out HashSet<int> posWithTheMark))
         {
-            HashSet<int> posWithTheMark = new HashSet<int>();
-
-            for (int pos = 0; pos < 9; ++pos)
-            {
-                if (outcome[pos] == 0)
-                {
-                    return result;
-                }
-                else if (outcome[pos] == mark)
-                {
-                    posWithTheMark.Add(pos);
-                }
-            }
-
             if (posWithTheMark.Count >= 5)
             {
                 attackAgent(enemy);
-                clearGrids(posWithTheMark);
+                Utils.ClearGrids(outcome, posWithTheMark);
             }
             else
             {

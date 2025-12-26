@@ -11,12 +11,13 @@ public class TTTGameControllerCore : MonoBehaviour
 {
     [Header("机器学习")]
     [SerializeField] GameObject ML;
-    [SerializeField] Agent agent1;
-    [SerializeField] Agent agent2;
+    [SerializeField] protected Trainer trainer;
+    [SerializeField] protected Agent agent1;
+    [SerializeField] protected Agent agent2;
 
     [Header("棋盘")]
-    [SerializeField] Transform grids;
-    [SerializeField] int[] initState;
+    [SerializeField] protected Transform grids;
+    [SerializeField] protected int[] initState;
 
     [Header("结果")]
     [SerializeField] GameObject[] crossPrefabs;
@@ -48,6 +49,8 @@ public class TTTGameControllerCore : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Awake()
     {
+        trainer.initState = initState;
+
         gridTriggers = new EventTrigger[grids.childCount];
         for (int i = 0; i < grids.childCount; ++i)
         {
@@ -95,11 +98,11 @@ public class TTTGameControllerCore : MonoBehaviour
         {
             Debug.Assert(enemy == agent1);
 
-            int pos =  Random.value < 0.75f
-                ? (new int[] { 0, 2, 6, 8 })[Random.Range(0, 4)]
-                : 4;
-            state[pos] = enemy.mark;
-            //state = enemy.Move(state, out int _);
+            //int pos =  Random.value < 0.75f
+            //    ? (new int[] { 0, 2, 6, 8 })[Random.Range(0, 4)]
+            //    : 4;
+            //state[pos] = enemy.mark;
+            state = enemy.Move(state, out _);
 
             UpdateStateVisual();
         }
@@ -122,14 +125,18 @@ public class TTTGameControllerCore : MonoBehaviour
         }
     }
 
-    protected void CrossCheck(int begin, int end, int type, Agent agent)
+    protected bool CrossCheck(int begin, int end, int type, Agent agent)
     {
+        bool crossCheckPassed = false;
+
         for (int i = begin; i < end; ++i)
         {
             int[] line = Utils.lines[i];
 
-            if (Utils.lineMatch(state, line, agent.mark))
+            if (Utils.LineMatch(state, line, agent.mark))
             {
+                crossCheckPassed = true;
+
                 (agent == player ? onPlayerCrossEarly : onEnemyCrossEarly).Invoke();
 
                 GameObject crossObj = Instantiate(crossPrefabs[type], grids.GetChild(line[1]));
@@ -147,15 +154,25 @@ public class TTTGameControllerCore : MonoBehaviour
                 });
             }
         }
+
+        return crossCheckPassed;
     }
 
-    protected void CrossCheck(Agent agent)
+    protected void Check(Agent agent)
     {
-        CrossCheck(0, 3, 0, agent);
-        CrossCheck(3, 6, 1, agent);
-        CrossCheck(6, 7, 2, agent);
-        CrossCheck(7, 8, 3, agent);
+        bool crossCheckPassed = CrossCheck(0, 3, 0, agent);
+
+        crossCheckPassed = CrossCheck(3, 6, 1, agent) || crossCheckPassed;
+        crossCheckPassed = CrossCheck(6, 7, 2, agent) || crossCheckPassed;
+        crossCheckPassed = CrossCheck(7, 8, 3, agent) || crossCheckPassed;
+
+        if (!crossCheckPassed && Utils.Draw(state, agent.mark, out HashSet<int> posWithTheMark))
+        {
+            DrawBreaker(posWithTheMark);
+        }
     }
+
+    protected virtual void DrawBreaker(HashSet<int> posWithTheMark) { }
 
     protected void SetGridTriggersEnabled(bool val)
     {
@@ -189,7 +206,7 @@ public class TTTGameControllerCore : MonoBehaviour
 
         state[pos] = player.mark;
 
-        CrossCheck(player);
+        Check(player);
 
         if (outcomeDecorator)
         {
@@ -219,7 +236,7 @@ public class TTTGameControllerCore : MonoBehaviour
                     int[] outcome = enemy.Move(state, out int enemyPos);
                     state[enemyPos] = enemy.mark;
 
-                    CrossCheck(enemy);
+                    Check(enemy);
 
                     state = outcome;
 

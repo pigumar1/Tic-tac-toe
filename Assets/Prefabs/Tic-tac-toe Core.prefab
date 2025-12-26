@@ -120,6 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ML: {fileID: 7304983298449906392}
+  trainer: {fileID: 2744399774183456289}
   agent1: {fileID: 7436977598036232490}
   agent2: {fileID: 3880292625736943471}
   grids: {fileID: 912799886763887039}
@@ -169,6 +170,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onPlayerCrossEarly:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnemyCrossEarly:
+    m_PersistentCalls:
+      m_Calls: []
   gameState: 0
   state: 
   player: {fileID: 7436977598036232490}

@@ -2130,6 +2130,10 @@ PrefabInstance:
       value: -500
       objectReference: {fileID: 0}
     - target: {fileID: 4347408508244612289, guid: c2a5d24ee2fce114bb4a2271731dae60, type: 3}
+      propertyPath: trainer
+      value: 
+      objectReference: {fileID: 1400685756}
+    - target: {fileID: 4347408508244612289, guid: c2a5d24ee2fce114bb4a2271731dae60, type: 3}
       propertyPath: crossHalf
       value: 1
       objectReference: {fileID: 0}
