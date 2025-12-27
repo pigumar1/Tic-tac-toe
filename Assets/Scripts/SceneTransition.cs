@@ -1,12 +1,16 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SceneTransition : MonoBehaviour
 {
+    const float duration = 0.5f;
+
     CanvasGroup canvasGroup;
     [SerializeField] Image image;
 
@@ -19,8 +23,6 @@ public class SceneTransition : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             instance = this;
 
-            EventBus.Subscribe<BeginSceneTransitionEvent>(_ => gameObject.SetActive(true));
-
             canvasGroup = GetComponent<CanvasGroup>();
 
             gameObject.SetActive(false);
@@ -31,81 +33,125 @@ public class SceneTransition : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    bool fadeInCompleted;
+    bool _sceneLoading;
+
+    public static bool sceneLoading
     {
-        StartCoroutine(CoroutineUpdate());
+        get => instance._sceneLoading;
+
+        set
+        {
+            instance._sceneLoading = value;
+
+            if (value)
+            {
+                EventBus.Subscribe<BeginSceneLoadEvent>(instance.BeginSceneLoad);
+                EventBus.Subscribe<EndSceneLoadEvent>(instance.EndSceneLoad);
+            }
+            else
+            {
+                EventBus.Unsubscribe<BeginSceneLoadEvent>(instance.BeginSceneLoad);
+                EventBus.Unsubscribe<EndSceneLoadEvent>(instance.EndSceneLoad);
+            }
+        }
     }
 
-    private IEnumerator CoroutineUpdate()
+    void BeginSceneLoad(BeginSceneLoadEvent e)
     {
-        bool fadeInCompleted = false;
-        bool sceneLoading = true;
-
-        void BeginSceneLoad(BeginSceneLoadEvent e)
+        IEnumerator WaitAndLoadScene()
         {
-            IEnumerator WaitAndLoadScene()
+            while (!fadeInCompleted)
             {
-                while (!fadeInCompleted)
-                {
-                    yield return null;
-                }
-
-                SceneManager.LoadScene(e.sceneName);
+                yield return null;
             }
 
-            StartCoroutine(WaitAndLoadScene());
-        }
-        void EndSceneLoad(EndSceneLoadEvent _)
-        {
-            sceneLoading = false;
-            SaveManager.data.sceneName = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene(e.sceneName);
         }
 
-        #region LoadSceneµÄ´°¿Ú
-        EventBus.Subscribe<BeginSceneLoadEvent>(BeginSceneLoad);
-        EventBus.Subscribe<EndSceneLoadEvent>(EndSceneLoad);
+        StartCoroutine(WaitAndLoadScene());
+    }
 
-        #region Fade in
-        float duration = 0.5f;
+    void EndSceneLoad(EndSceneLoadEvent _)
+    {
+        sceneLoading = false;
+        SaveManager.data.sceneName = SceneManager.GetActiveScene().name;
+    }
 
-        canvasGroup.DOFade(1, duration);
-        yield return new WaitForSeconds(duration);
+    private IEnumerator ShowCoroutine(IEnumerator then)
+    {
+        fadeInCompleted = false;
+
+        yield return StartCoroutine(Fade(true));
 
         fadeInCompleted = true;
-        #endregion
 
+        yield return StartCoroutine(then);
+    }
+
+    private IEnumerator WaitForSceneLoadEnd()
+    {
         while (sceneLoading)
         {
             yield return null;
         }
 
-        EventBus.Unsubscribe<BeginSceneLoadEvent>(BeginSceneLoad);
-        EventBus.Unsubscribe<EndSceneLoadEvent>(EndSceneLoad);
-        #endregion
-
-        canvasGroup.DOFade(0, duration);
-        yield return new WaitForSeconds(duration);
+        yield return StartCoroutine(Fade(false));
 
         EventBus.Publish(new EndSceneTransitionEvent());
 
         gameObject.SetActive(false);
     }
 
+    public static void Show(Color color)
+    {
+        instance.image.color = color;
+        instance.gameObject.SetActive(true);
+
+        instance.StopAllCoroutines();
+        instance.StartCoroutine(instance.ShowCoroutine(instance.WaitForSceneLoadEnd()));
+    }
+
     public static void To(string sceneName) => To(sceneName, Color.white);
 
     public static void To(string sceneName, Color color)
     {
-        instance.image.color = color;
+        sceneLoading = true;
 
-        instance.gameObject.SetActive(true);
+        Show(color);
+
         EventBus.Publish(new BeginSceneLoadEvent
         {
             sceneName = sceneName
         });
     }
-}
 
-public struct BeginSceneTransitionEvent { }
+    public static void Skip(Action onComplete)
+    {
+        instance.image.color = Color.black;
+        instance.gameObject.SetActive(true);
+
+        instance.StopAllCoroutines();
+        instance.StartCoroutine(instance.ShowCoroutine(instance.SkipCoroutine(onComplete)));
+    }
+
+    private IEnumerator SkipCoroutine(Action onComplete)
+    {
+        onComplete.Invoke();
+
+        yield return StartCoroutine(Fade(false));
+
+        gameObject.SetActive(false);
+    }
+
+    private IEnumerator Fade(bool fadeIn)
+    {
+        float targetAlpha = fadeIn ? 1 : 0;
+
+        canvasGroup.DOFade(targetAlpha, duration);
+        yield return new WaitForSeconds(duration);
+    }
+}
 
 public struct BeginSceneLoadEvent
 {

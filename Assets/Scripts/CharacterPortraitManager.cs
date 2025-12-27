@@ -40,24 +40,49 @@ public class CharacterPortraitManager : MonoBehaviour
             case "Show":
                 {
                     portrait.enabled = true;
-                    portrait.DOColor(Color.white, 0.5f)
-                        .OnComplete(() => e.completed = true);
+
+                    if (e.skip)
+                    {
+                        portrait.color = Color.white;
+                    }
+                    else
+                    {
+                        portrait.DOColor(Color.white, 0.5f)
+                            .OnComplete(() => e.completed = true);
+                    }
                     break;
                 }
             case "Hide":
                 {
-                    portrait.DOColor(Color.clear, 0.5f)
-                        .OnComplete(() =>
-                        {
-                            e.completed = true;
-                            portrait.enabled = false;
-                        });
+                    if (e.skip)
+                    {
+                        portrait.color = Color.clear;
+                        portrait.enabled = false;
+                    }
+                    else
+                    {
+                        portrait.DOColor(Color.clear, 0.5f)
+                            .OnComplete(() =>
+                            {
+                                e.completed = true;
+                                portrait.enabled = false;
+                            });
+                    }
                     break;
                 }
             case "Move":
                 {
-                    portrait.GetComponent<RectTransform>().DOAnchorPosX(e.args.First(), 1)
-                        .OnComplete(() => e.completed = true);
+                    RectTransform rt = portrait.GetComponent<RectTransform>();
+
+                    if (e.skip)
+                    {
+                        rt.anchoredPosition = new Vector2(e.args.First(), rt.anchoredPosition.y);
+                    }
+                    else
+                    {
+                        rt.DOAnchorPosX(e.args.First(), 1)
+                            .OnComplete(() => e.completed = true);
+                    }
 
                     break;
                 }
@@ -70,8 +95,9 @@ public class DOCharacterEvent : SpinLockEvent
     public int id;
     public string eventType;
     public List<int> args;
+    public bool skip;
 
-    public DOCharacterEvent(string eventType, List<string> args)
+    public DOCharacterEvent(string eventType, List<string> args, bool skip)
     {
         this.args = new List<int>();
 
@@ -90,5 +116,6 @@ public class DOCharacterEvent : SpinLockEvent
         }
         
         this.eventType = eventType;
+        this.skip = skip;
     }
 }

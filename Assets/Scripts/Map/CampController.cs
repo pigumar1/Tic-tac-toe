@@ -91,7 +91,7 @@ public class CampController : DelayedMonoBehaviour
                             EventBus.Publish(new DOCharacterEvent("Show", new List<string>
                             {
                                 "0",
-                            }));
+                            }, false));
                         }
 
                         EventBus.Publish(new BeginDialogueEvent(taskInfo));
@@ -178,11 +178,38 @@ public class CampController : DelayedMonoBehaviour
 
     private void HandleGeneralEvent(GeneralEvent e)
     {
+        if (e.skip)
+        {
+            switch (e.eventName)
+            {
+                case "show_board_1":
+                case "game_1":
+                case "game_2":
+                case "game_draw":
+                case "game_real_pre":
+                case "game_real":
+                    {
+                        return;
+                    }
+                case "game_real_break":
+                    {
+                        boardCanvasGroups[4].alpha = 0;
+
+                        EventBus.Publish(new DialogueJumpEvent
+                        {
+                            newCounter = 14
+                        });
+                        return;
+                    }
+            }
+        }
+
         switch (e.eventName)
         {
             case "show_board_1":
                 {
                     boardCanvasGroups.First().DOFade(1, duration);
+
                     break;
                 }
             case "game_1":
@@ -225,7 +252,14 @@ public class CampController : DelayedMonoBehaviour
                 {
                     for (int i = 0; i < 4; ++i)
                     {
-                        boardCanvasGroups[i].DOFade(0, duration);
+                        if (e.skip)
+                        {
+                            boardCanvasGroups[i].alpha = 0;
+                        }
+                        else
+                        {
+                            boardCanvasGroups[i].DOFade(0, duration);
+                        }
                     }
 
                     break;
@@ -243,14 +277,22 @@ public class CampController : DelayedMonoBehaviour
             case "game_real_retry":
                 {
                     gameControllerCores[0].ResetGame();
-                    boardCanvasGroups[4].DOFade(1, duration);
+
+                    if (e.skip)
+                    {
+                        boardCanvasGroups[4].alpha = 1;
+                    }
+                    else
+                    {
+                        boardCanvasGroups[4].DOFade(1, duration);
+                    }
                     break;
                 }
             case "game_yang_pre":
                 {
                     gameControllerCores[1].ResetGame();
                     gameControllerCores[1].SetPlayerFirst(true);
-                    boardCanvasGroups[5].DOFade(1, duration);
+                        boardCanvasGroups[5].DOFade(1, duration);
                     break;
                 }
             case "game_yang_switch":

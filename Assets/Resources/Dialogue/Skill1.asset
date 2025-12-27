@@ -47,3 +47,4 @@ MonoBehaviour:
     - complete
   next: {fileID: 0}
   stateMod: 
+  skippable: 0

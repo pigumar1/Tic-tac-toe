@@ -30,7 +30,7 @@ public class CombatTutorial : DelayedMonoBehaviour
             EventBus.Publish(new DOCharacterEvent("Show", new List<string>
             {
                 "0",
-            }));
+            }, false));
 
             if (taskInfo.paragraphID >= 11)
             {
@@ -55,12 +55,35 @@ public class CombatTutorial : DelayedMonoBehaviour
 
     private void HandleGeneralEvent(GeneralEvent e)
     {
+        if (e.skip)
+        {
+            switch (e.eventName)
+            {
+                case "attack1":
+                case "attack2":
+                case "attack8":
+                case "attack3":
+                case "attack4":
+                case "attack5":
+                case "attack6":
+                    {
+                        return;
+                    }
+            }
+        }
+
         switch (e.eventName)
         {
             case "board_appear":
                 {
                     canvasGroups.First().DOFade(1, duration)
                         .OnComplete(() => EventBus.Publish(new DialogueRespondEvent()));
+                    break;
+                }
+            case "board_appear_break":
+                {
+                    canvasGroups.First().alpha = 1;
+
                     break;
                 }
             case "attack1":
@@ -115,7 +138,17 @@ public class CombatTutorial : DelayedMonoBehaviour
                 }
             case "attack7":
                 {
-                    canvasGroups[5].DOFade(0, duration);
+                    if (e.skip)
+                    {
+                        for (int i = 1; i < 8; ++i)
+                        {
+                            canvasGroups[i].alpha = 0;
+                        }
+                    }
+                    else
+                    {
+                        canvasGroups[5].DOFade(0, duration);
+                    }
 
                     break;
                 }
@@ -134,7 +167,17 @@ public class CombatTutorial : DelayedMonoBehaviour
                 }
             case "tic_tac_toe1":
                 {
-                    combat.StartGame();
+                    if (!e.skip)
+                    {
+                        combat.StartGame();
+                    }
+
+                    break;
+                }
+            case "tic_tac_toe1_break":
+                {
+                    canvasGroups[0].alpha = 0;
+                    combat.HideUI();
 
                     break;
                 }

@@ -50,7 +50,9 @@ public class DialogueUI : UIBase
 
         paragraph = next;
     }
+
     int counter;
+    string locker;
     #endregion
 
     private void Awake()
@@ -62,48 +64,50 @@ public class DialogueUI : UIBase
         playerTalkButtons = playerTalkButtonCanvasGroup.GetComponentsInChildren<Button>();
         skipButton.onClick.AddListener(() =>
         {
+            skipButton.gameObject.SetActive(false);
+
             DisablePlayerTalkButtons();
-            playerTalkButtonCanvasGroup.alpha = 0;
 
             StopAllCoroutines();
-            StartCoroutine(Fade(false));
 
-            for (; counter < paragraph.dialogueNodes.Count; ++counter)
+            if (!string.IsNullOrEmpty(locker))
             {
-                DialogueNode node = paragraph.dialogueNodes[counter];
-
-                switch (node.speaker)
+                EventBus.Publish(new GeneralEvent
                 {
-                    case "NewTask":
-                        {
-                            EventBus.Publish(new NewTaskEvent
-                            {
-                                id = (TaskID)int.Parse(node.lines.First())
-                            });
+                    eventName = locker + "_break",
+                    skip = true
+                });
 
-                            break;
-                        }
-                    case "CompleteTask":
-                        {
-                            EventBus.Publish(new CompleteTaskEvent
-                            {
-                                id = (TaskID)int.Parse(node.lines.First())
-                            });
-
-                            break;
-                        }
-                }
+                locker = null;
             }
 
-            nextParagraph(paragraph.next);
-
-            if (paragraph == null)
+            SceneTransition.Skip(() =>
             {
-                gameObject.SetActive(false);
-            }
-
-            SceneTransition.To(SceneManager.GetActiveScene().name, Color.black);
+                StartCoroutine(Skip());
+            });
         });
+    }
+
+    IEnumerator Skip()
+    {
+        DialogueParagraph next = paragraph.next;
+
+        for (; counter < paragraph.dialogueNodes.Count; ++counter)
+        {
+            yield return StartCoroutine(HandleDialogueNode(paragraph.dialogueNodes[counter],
+                id => next = dialogueDatabase[id], true));
+        }
+
+        nextParagraph(next);
+
+        if (paragraph == null)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            StartCoroutine(CoroutineUpdate(new BeginDialogueEvent(taskInfo)));
+        }
     }
 
     private void DisablePlayerTalkButtons()
@@ -133,22 +137,26 @@ public class DialogueUI : UIBase
         taskInfo = e.taskInfo;
         paragraph = dialogueDatabase[e.paragraphID];
 
-        yield return StartCoroutine(Fade(true));
+        yield return StartCoroutine(Fade(true, false));
 
         while (paragraph != null)
         {
+            skipButton.gameObject.SetActive(paragraph.skippable);
+
             DialogueParagraph next = paragraph.next;
 
             for (counter = 0; counter < paragraph.dialogueNodes.Count; ++counter)
             {
                 yield return StartCoroutine(HandleDialogueNode(paragraph.dialogueNodes[counter],
-                    id => next = dialogueDatabase[id]));
+                    id => next = dialogueDatabase[id], false));
             }
+
+            skipButton.gameObject.SetActive(false);
 
             nextParagraph(next);
         }
 
-        yield return StartCoroutine(Fade(false));
+        yield return StartCoroutine(Fade(false, false));
 
         gameObject.SetActive(false);
     }
@@ -165,16 +173,25 @@ public class DialogueUI : UIBase
         taskInfo = null;
     }
 
-    IEnumerator Fade(bool fadeIn)
+    IEnumerator Fade(bool fadeIn, bool skip)
     {
         speaker.text = "";
         line.text = "";
 
-        canvasGroup.DOFade(fadeIn ? 1 : 0, duration);
-        yield return new WaitForSeconds(duration);
+        float targetAlpha = fadeIn ? 1 : 0;
+
+        if (skip)
+        {
+            canvasGroup.alpha = targetAlpha;
+        }
+        else
+        {
+            canvasGroup.DOFade(targetAlpha, duration);
+            yield return new WaitForSeconds(duration);
+        }
     }
 
-    IEnumerator HandleDialogueNode(DialogueNode node, Action<int> setNext)
+    IEnumerator HandleDialogueNode(DialogueNode node, Action<int> setNext, bool skip)
     {
         Func<int> nodeFirstIntArg = () => int.Parse(node.lines.First());
 
@@ -182,12 +199,12 @@ public class DialogueUI : UIBase
         {
             case "Yield":
                 {
-                    yield return StartCoroutine(Fade(false));
+                    yield return StartCoroutine(Fade(false, skip));
 
                     node.speaker = "PublishAndWaitForRespond";
-                    yield return StartCoroutine(HandleDialogueNode(node, setNext));
+                    yield return StartCoroutine(HandleDialogueNode(node, setNext, skip));
 
-                    yield return StartCoroutine(Fade(true));
+                    yield return StartCoroutine(Fade(true, skip));
 
                     break;
                 }
@@ -211,7 +228,7 @@ public class DialogueUI : UIBase
                 }
             case "Fade":
                 {
-                    yield return StartCoroutine(Fade(node.lines.First() == "1"));
+                    yield return StartCoroutine(Fade(node.lines.First() == "1", skip));
                     break;
                 }
             case "SetNext":
@@ -221,35 +238,41 @@ public class DialogueUI : UIBase
                 }
             case "Publish":
                 {
-                    List<string> args = new List<string>(node.lines);
-                    string eventName = args.First();
-
-                    args.RemoveAt(0);
-
                     EventBus.Publish(new GeneralEvent
                     {
-                        eventName = eventName,
-                        args = args
+                        eventName = node.lines[0],
+                        skip = skip,
                     });
 
                     break;
                 }
             case "PublishAndWaitForRespond":
                 {
-                    bool locked = true;
+                    locker = node.lines[0];
 
-                    Action<DialogueRespondEvent> unlock = _ => locked = false;
+                    Action<DialogueRespondEvent> unlock = _ => locker = null;
                     Action<DialogueJumpEvent> onJump = e => Jump(e.newCounter);
 
                     EventBus.Subscribe(unlock);
                     EventBus.Subscribe(onJump);
 
                     node.speaker = "Publish";
-                    yield return StartCoroutine(HandleDialogueNode(node, setNext));
+                    yield return StartCoroutine(HandleDialogueNode(node, setNext, skip));
 
-                    while (locked)
+                    if (!skip)
                     {
-                        yield return null;
+                        while (!string.IsNullOrEmpty(locker))
+                        {
+                            yield return null;
+                        }
+                    }
+                    else
+                    {
+                        EventBus.Publish(new GeneralEvent
+                        {
+                            eventName = locker + "_break",
+                            skip = true
+                        });
                     }
 
                     EventBus.Unsubscribe(unlock);
@@ -260,7 +283,15 @@ public class DialogueUI : UIBase
             case "Player":
                 {
                     node.speaker = SaveManager.data.playerName;
-                    yield return StartCoroutine(HandleDialogueNode(node, setNext));
+                    
+                    if (skip)
+                    {
+                        HandleDialogueNode(node, setNext, skip);
+                    }
+                    else
+                    {
+                        yield return StartCoroutine(HandleDialogueNode(node, setNext, skip));
+                    }
 
                     break;
                 }
@@ -274,118 +305,148 @@ public class DialogueUI : UIBase
             case "ShowCharacter":
             case "HideCharacter":
                 {
-                    DOCharacterEvent e = new DOCharacterEvent(node.speaker.Replace("Character", ""), node.lines);
+                    DOCharacterEvent e = new DOCharacterEvent(node.speaker.Replace("Character", ""), node.lines, skip);
 
                     EventBus.Publish(e);
 
-                    while (!e.completed)
+                    if (!skip)
                     {
-                        yield return null;
+                        while (!e.completed)
+                        {
+                            yield return null;
+                        }
                     }
 
                     break;
                 }
             case "ShowOptions":
                 {
-                    bool locked = true;
-
-                    for (int i = 0; i < playerTalkButtons.Length; ++i)
+                    if (skip)
                     {
-                        Button button = playerTalkButtons[i];
+                        string destStr = node.lines[1];
 
-                        if (i * 2 < node.lines.Count)
+                        if (!string.IsNullOrEmpty(destStr))
                         {
-                            button.gameObject.SetActive(true);
-
-                            button.onClick.AddListener(() =>
-                            {
-                                locked = false;
-                            });
-
-                            string destStr = node.lines[i * 2 + 1];
-
-                            if (!string.IsNullOrEmpty(destStr))
-                            {
-                                int dest = int.Parse(destStr);
-
-                                button.onClick.AddListener(() =>
-                                {
-                                    Jump(dest);
-                                });
-                            }
-
-                            for (int j = 0; j < button.transform.childCount; ++i)
-                            {
-                                if (button.transform.GetChild(j).TryGetComponent(out TextMeshProUGUI body))
-                                {
-                                    body.text = node.lines[i * 2];
-                                    break;
-                                }
-                            }
+                            Jump(int.Parse(destStr));
                         }
-                        else
-                        {
-                            button.gameObject.SetActive(false);
-                        }
+
+                        DisablePlayerTalkButtons();
+                        playerTalkButtonCanvasGroup.alpha = 0;
                     }
-
-                    playerTalkButtonCanvasGroup.DOFade(1, duration);
-                    playerTalkButtonCanvasGroup.interactable = true;
-                    playerTalkButtonCanvasGroup.blocksRaycasts = true;
-                    yield return new WaitForSeconds(duration);
-
-                    while (locked)
+                    else
                     {
-                        yield return null;
+                        bool locked = true;
 
                         for (int i = 0; i < playerTalkButtons.Length; ++i)
                         {
                             Button button = playerTalkButtons[i];
 
-                            if (button.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Alpha1 + i))
+                            if (i * 2 < node.lines.Count)
                             {
-                                button.onClick.Invoke();
-                                locked = false;
+                                button.gameObject.SetActive(true);
 
-                                break;
+                                button.onClick.AddListener(() =>
+                                {
+                                    locked = false;
+                                });
+
+                                string destStr = node.lines[i * 2 + 1];
+
+                                if (!string.IsNullOrEmpty(destStr))
+                                {
+                                    int dest = int.Parse(destStr);
+
+                                    button.onClick.AddListener(() =>
+                                    {
+                                        Jump(dest);
+                                    });
+                                }
+
+                                for (int j = 0; j < button.transform.childCount; ++i)
+                                {
+                                    if (button.transform.GetChild(j).TryGetComponent(out TextMeshProUGUI body))
+                                    {
+                                        body.text = node.lines[i * 2];
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                button.gameObject.SetActive(false);
                             }
                         }
+
+                        playerTalkButtonCanvasGroup.DOFade(1, duration);
+                        playerTalkButtonCanvasGroup.interactable = true;
+                        playerTalkButtonCanvasGroup.blocksRaycasts = true;
+                        yield return new WaitForSeconds(duration);
+
+                        while (locked)
+                        {
+                            yield return null;
+
+                            for (int i = 0; i < playerTalkButtons.Length; ++i)
+                            {
+                                Button button = playerTalkButtons[i];
+
+                                if (button.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Alpha1 + i))
+                                {
+                                    button.onClick.Invoke();
+                                    locked = false;
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        DisablePlayerTalkButtons();
+                        playerTalkButtonCanvasGroup.DOFade(0, duration);
                     }
-                    
-                    DisablePlayerTalkButtons();
-                    playerTalkButtonCanvasGroup.DOFade(0, duration);
 
                     break;
                 }
             default:
                 {
-                    speaker.text = node.speaker;
-
-                    foreach (var line in node.lines)
+                    Action hideContents = () =>
                     {
-                        bool cont = line.Contains("<continue>");
+                        speaker.text = "";
+                        line.text = "";
+                    };
 
-                        this.line.text =
-                            line.Replace("<player>", $"<b>{SaveManager.data.playerName}</b>")
-                            .Replace("<b>", "<color=#F5CE6D>")
-                            .Replace("</b>", "</color>")
-                            .Replace("<continue>", "");
+                    if (skip)
+                    {
+                        hideContents.Invoke();
+                    }
+                    else
+                    {
+                        speaker.text = node.speaker;
 
-                        if (!cont)
+                        foreach (var line in node.lines)
                         {
-                            while (UIManager.Top() != this || !Input.GetMouseButtonDown(0))
+                            bool cont = line.Contains("<continue>");
+
+                            this.line.text =
+                                line.Replace("<player>", $"<b>{SaveManager.data.playerName}</b>")
+                                .Replace("<b>", "<color=#F5CE6D>")
+                                .Replace("</b>", "</color>")
+                                .Replace("<continue>", "");
+
+                            if (!cont)
                             {
-                                yield return null;
+                                while (UIManager.Top() != this || !Input.GetMouseButtonDown(0))
+                                {
+                                    yield return null;
+                                }
+
+                                if (line == node.lines.Last())
+                                {
+                                    hideContents.Invoke();
+                                }
                             }
 
-                            if (line == node.lines.Last())
-                            {
-                                speaker.text = "";
-                                this.line.text = "";
-                            }
+                            yield return null;
                         }
-
-                        yield return null;
                     }
 
                     break;
@@ -430,7 +491,8 @@ public struct DialogueJumpEvent
 public struct GeneralEvent
 {
     public string eventName;
-    public List<string> args;
+    //public string breakerName;
+    public bool skip;
 }
 
 [Serializable]

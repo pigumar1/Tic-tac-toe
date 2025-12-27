@@ -10,4 +10,5 @@ public class DialogueParagraph : ScriptableObject
     public List<DialogueNode> dialogueNodes;
     public DialogueParagraph next;
     public int[] stateMod;
+    public bool skippable = true;
 }

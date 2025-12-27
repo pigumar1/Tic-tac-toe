@@ -88,7 +88,8 @@ public class StartSceneController : MonoBehaviour
         {
             case LogState.LoggedIn:
                 EventBus.Publish(new LoadEvent());
-                EventBus.Publish(new BeginSceneTransitionEvent());
+                SceneTransition.sceneLoading = true;
+                SceneTransition.Show(Color.white);
 
                 if (SaveManager.data != null)
                 {
