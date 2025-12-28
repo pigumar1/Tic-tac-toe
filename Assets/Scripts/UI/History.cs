@@ -22,12 +22,22 @@ public class History : MonoBehaviour, IUserInterface
     private void OnEnable()
     {
         uiManager.Push(this);
-        scrollRect.verticalScrollbar.value = 0;
 
+        canvasGroup.alpha = 0;
         canvasGroup.interactable = true;
+
+        StartCoroutine(UpdateVerticalScrollBar());
 
         canvasGroup.DOFade(1, 0.5f)
             .SetId("History");
+    }
+
+    IEnumerator UpdateVerticalScrollBar()
+    {
+        yield return new WaitForEndOfFrame();
+
+        scrollRect.verticalNormalizedPosition = 0f;
+        scrollRect.velocity = Vector2.zero; // ∑¿÷ππﬂ–‘∑¥µØ
     }
 
     public void Hide()
