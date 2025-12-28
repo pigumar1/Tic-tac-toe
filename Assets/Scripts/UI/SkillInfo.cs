@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillInfo : UIBase
+[HideOnStart]
+public class SkillInfo : MonoBehaviour, IUserInterface
 {
     private void Awake()
     {

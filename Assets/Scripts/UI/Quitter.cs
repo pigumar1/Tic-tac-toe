@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Quitter : UIBase
+[HideOnStart]
+public class Quitter : MonoBehaviour, IUserInterface
 {
     [SerializeField] GameObject button;
 
@@ -19,7 +20,7 @@ public class Quitter : UIBase
 
     private void OnEnable()
     {
-        PublishShowUIEvent();
+        ((IUserInterface)this).PublishShowUIEvent();
     }
 
     private void OnDisable()

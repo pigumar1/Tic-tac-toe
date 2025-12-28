@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
     static UIManager instance;
 
-    UIBase[] uiList;
-    Dictionary<Type, UIBase> uiMap = new Dictionary<Type, UIBase>();
-    Stack<UIBase> uiStack = new Stack<UIBase>();
+    IUserInterface[] uiList;
+    Dictionary<Type, IUserInterface> uiMap = new Dictionary<Type, IUserInterface>();
+    Stack<IUserInterface> uiStack = new Stack<IUserInterface>();
 
     private void Awake()
     {
@@ -26,21 +27,23 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        uiList = GetComponentsInChildren<UIBase>();
+        uiList = GetComponentsInChildren<IUserInterface>(true);
 
         foreach (var ui in uiList)
         {
-            uiMap[ui.GetType()] = ui;
-        }
+            Type type = ui.GetType();
 
-        foreach (var ui in uiList)
-        {
-            ui.gameObject.SetActive(false);
+            uiMap[type] = ui;
+
+            if (type.HasAttribute<HideOnStartAttribute>())
+            {
+                ((MonoBehaviour)ui).gameObject.SetActive(false);
+            }
         }
 
         EventBus.Subscribe<BeginDialogueEvent>(e =>
         {
-            UIBase ui = uiMap[e.uiType];
+            IUserInterface ui = uiMap[e.uiType];
 
             print("Pushed");
             uiStack.Push(ui);
@@ -48,15 +51,15 @@ public class UIManager : MonoBehaviour
 
         EventBus.Subscribe<ShowUIEvent>(e =>
         {
-            UIBase ui = uiMap[e.uiType];
+            IUserInterface ui = uiMap[e.uiType];
 
-            print("Pushed");
+            print($"Pushed {ui.GetType()}");
             uiStack.Push(ui);
         });
 
         EventBus.Subscribe<HideUIEvent>(_ =>
         {
-            print("Popped");
+            print($"Popped {Top().GetType()}");
             uiStack.Pop();
         });
     }
@@ -73,7 +76,20 @@ public class UIManager : MonoBehaviour
         uiStack.Pop();
     }
 
-    public static UIBase Top()
+    public void Push(IUserInterface ui)
+    {
+        print($"Pushed {ui.GetType()}");
+        uiStack.Push(ui);
+    }
+
+    public void Pop(IUserInterface ui)
+    {
+        //Debug.Assert(Top() == ui);
+        print($"Popped {ui.GetType()}");
+        uiStack.Pop();
+    }
+
+    public static IUserInterface Top()
     {
         return instance.uiStack.Peek();
     }
@@ -85,3 +101,8 @@ public class ShowUIEvent
 }
 
 public struct HideUIEvent { }
+
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+public class HideOnStartAttribute : Attribute
+{
+}

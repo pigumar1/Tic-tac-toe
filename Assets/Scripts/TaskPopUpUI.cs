@@ -7,7 +7,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TaskPopUpUI : UIBase
+[HideOnStart]
+public class TaskPopUpUI : MonoBehaviour, IUserInterface
 {
     [SerializeField] GameObject newTaskIcon;
     [SerializeField] GameObject completeTaskIcon;

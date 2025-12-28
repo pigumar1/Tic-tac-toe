@@ -4,13 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class DialogueUI : UIBase
+[HideOnStart]
+public class DialogueUI : MonoBehaviour, IUserInterface
 {
     const float duration = 0.5f;
 
@@ -18,6 +19,9 @@ public class DialogueUI : UIBase
     [SerializeField] TextMeshProUGUI line;
     [SerializeField] CanvasGroup playerTalkButtonCanvasGroup;
     [SerializeField] Button skipButton;
+    [SerializeField] Transform historyTexts;
+    [SerializeField] GameObject historyLineGroupPrefab;
+    [SerializeField] GameObject historyOptionGroupPrefab;
 
     CanvasGroup canvasGroup;
     DialogueDatabase dialogueDatabase;
@@ -43,6 +47,11 @@ public class DialogueUI : UIBase
 
     void nextParagraph(DialogueParagraph next)
     {
+        for (int i = historyTexts.childCount - 1; i >= 0; --i)
+        {
+            Destroy(historyTexts.GetChild(i).gameObject);
+        }
+
         if (taskInfo != null && paragraph.stateMod != null && paragraph.stateMod.Length > 0)
         {
             taskInfo.state = paragraph.stateMod.First();
@@ -183,10 +192,15 @@ public class DialogueUI : UIBase
         if (skip)
         {
             canvasGroup.alpha = targetAlpha;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
         }
         else
         {
             canvasGroup.DOFade(targetAlpha, duration);
+            canvasGroup.interactable = fadeIn;
+            canvasGroup.blocksRaycasts = fadeIn;
+
             yield return new WaitForSeconds(duration);
         }
     }
@@ -343,11 +357,15 @@ public class DialogueUI : UIBase
 
                             if (i * 2 < node.lines.Count)
                             {
+                                string bodyText = node.lines[i * 2];
+
                                 button.gameObject.SetActive(true);
 
                                 button.onClick.AddListener(() =>
                                 {
                                     locked = false;
+
+                                    CreateHistoryTextGroup(historyOptionGroupPrefab, "Ñ¡Ïî", bodyText);
                                 });
 
                                 string destStr = node.lines[i * 2 + 1];
@@ -366,7 +384,7 @@ public class DialogueUI : UIBase
                                 {
                                     if (button.transform.GetChild(j).TryGetComponent(out TextMeshProUGUI body))
                                     {
-                                        body.text = node.lines[i * 2];
+                                        body.text = bodyText;
                                         break;
                                     }
                                 }
@@ -432,6 +450,8 @@ public class DialogueUI : UIBase
                                 .Replace("</b>", "</color>")
                                 .Replace("<continue>", "");
 
+                            CreateHistoryTextGroup(historyLineGroupPrefab, node.speaker, this.line.text);
+
                             if (!cont)
                             {
                                 while (UIManager.Top() != this || !Input.GetMouseButtonDown(0))
@@ -452,6 +472,15 @@ public class DialogueUI : UIBase
                     break;
                 }
         }
+    }
+
+    private void CreateHistoryTextGroup(GameObject prefab, string speaker, string line)
+    {
+        GameObject historyTextGroupObj = Instantiate(prefab, historyTexts);
+        HistoryTextGroup historyTextGroup = historyTextGroupObj.GetComponent<HistoryTextGroup>();
+
+        historyTextGroup.speaker.text = string.IsNullOrEmpty(speaker) ? "" : speaker + "£º";
+        historyTextGroup.line.text = line;
     }
 }
 
