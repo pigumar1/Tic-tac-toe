@@ -22,7 +22,7 @@ public class Agent : MonoBehaviour
 
     public ValueMatrix valueMatrix;
     int[] storedOutcome;
-    OutcomeCandidateGen outcomeCandidateGen;
+    public MonoBehaviour outcomeCandidateGen;
     public Color color;
 
     // Start is called before the first frame update
@@ -38,7 +38,6 @@ public class Agent : MonoBehaviour
     public void Init(int[] valueMatrixShape)
     {
         valueMatrix = new ValueMatrix(valueMatrixShape);
-        outcomeCandidateGen = GetComponent<OutcomeCandidateGen>();
     }
 
     public void Clear() => storedOutcome = null;
@@ -48,7 +47,7 @@ public class Agent : MonoBehaviour
         int[] outcome = (int[])state.Clone();
 
         // 所有可能的结果
-        List<(int[], int)> outcomeCandidates = outcomeCandidateGen.Apply(state, mark);
+        List<(int[], int)> outcomeCandidates = (outcomeCandidateGen as IOutcomeCandidateGen).Apply(state, mark);
 
         // 有一定的概率做随机选择
         if (UnityEngine.Random.value < epsilon)

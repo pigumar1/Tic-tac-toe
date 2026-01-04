@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Tutorial1OutcomeDecorator : OutcomeDecorator
 {
-    public override List<int[]> Apply(int[] outcome, int mark)
+    public override List<int[]> Decorate(int[] outcome, int mark)
     {
         if (outcome.Count(m => m != 0) == 2 && outcome[4] == mark)
         {

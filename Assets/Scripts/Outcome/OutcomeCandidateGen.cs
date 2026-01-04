@@ -2,15 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OutcomeCandidateGen : MonoBehaviour
+public class OutcomeCandidateGen : MonoBehaviour, IOutcomeCandidateGen
 {
-    public OutcomeDecorator outcomeDecorator;
-
-    private void Awake()
-    {
-        outcomeDecorator = GetComponent<OutcomeDecorator>();
-    }
-
     public List<(int[], int)> Apply(int[] state, int mark)
     {
         List<(int[], int)> result = new List<(int[], int)>();
@@ -22,20 +15,15 @@ public class OutcomeCandidateGen : MonoBehaviour
                 int[] oc = (int[])state.Clone();
                 oc[pos] = mark;
 
-                if (outcomeDecorator)
-                {
-                    foreach (int[] ocDecorated in outcomeDecorator.Apply(oc, mark))
-                    {
-                        result.Add((ocDecorated, pos));
-                    }
-                }
-                else
-                {
-                    result.Add((oc, pos));
-                }
+                result.Add((oc, pos));
             }
         }
 
         return result;
     }
+}
+
+public interface IOutcomeCandidateGen
+{
+    List<(int[], int)> Apply(int[] state, int mark);
 }

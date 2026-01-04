@@ -54,6 +54,7 @@ MonoBehaviour:
   epsilon: 0.1
   decay: 0.99992
   alpha: 0.1
+  outcomeCandidateGen: {fileID: 4763306574893516300}
   color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &4763306574893516300
 MonoBehaviour:
@@ -67,7 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275ff06ec6050bf4f8e12a620a27b6bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outcomeDecorator: {fileID: 0}
 --- !u!1 &4359523529968963236
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,6 +181,7 @@ MonoBehaviour:
   player: {fileID: 7436977598036232490}
   enemy: {fileID: 3880292625736943471}
   turnDelay: 1
+  outcomeDecorator: {fileID: 0}
   boardCanvasGroup: {fileID: 4101928866147209594}
 --- !u!114 &8812890024741522040
 MonoBehaviour:
@@ -343,6 +344,7 @@ MonoBehaviour:
   epsilon: 0.1
   decay: 0.99992
   alpha: 0.1
+  outcomeCandidateGen: {fileID: 9030096423225029082}
   color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &9030096423225029082
 MonoBehaviour:
@@ -356,7 +358,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275ff06ec6050bf4f8e12a620a27b6bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outcomeDecorator: {fileID: 0}
 --- !u!1001 &4171444559851126741
 PrefabInstance:
   m_ObjectHideFlags: 0

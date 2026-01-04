@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CombatOutcomeDecorator : OutcomeDecorator
 {
-    public override List<int[]> Apply(int[] outcome, int mark)
+    public override List<int[]> Decorate(int[] outcome, int mark)
     {
         outcome = (int[])outcome.Clone();
         List<int[]> result = new List<int[]> { outcome };

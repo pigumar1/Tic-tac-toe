@@ -318,6 +318,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &250089653 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8521841468030089667, guid: de6a2641f94ff584da363daa21bbef9d, type: 3}
+  m_PrefabInstance: {fileID: 1725067227}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1725067232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275ff06ec6050bf4f8e12a620a27b6bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &562399019
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,6 +1102,10 @@ PrefabInstance:
       propertyPath: decay
       value: 0.99998
       objectReference: {fileID: 0}
+    - target: {fileID: 7793341478285525299, guid: de6a2641f94ff584da363daa21bbef9d, type: 3}
+      propertyPath: outcomeCandidateGen
+      value: 
+      objectReference: {fileID: 1725067233}
     - target: {fileID: 7850050524109662259, guid: de6a2641f94ff584da363daa21bbef9d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1314,6 +1329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76cc49904df7cf34c925ed3f6df291c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wrapped: {fileID: 250089653}
 --- !u!1 &1735467477
 GameObject:
   m_ObjectHideFlags: 0

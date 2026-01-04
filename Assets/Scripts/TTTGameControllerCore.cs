@@ -41,7 +41,7 @@ public class TTTGameControllerCore : MonoBehaviour
 
     #region Components
     EventTrigger[] gridTriggers;
-    OutcomeDecorator outcomeDecorator;
+    [SerializeField] OutcomeDecorator outcomeDecorator;
     Judger judger;
     [SerializeField] CanvasGroup boardCanvasGroup;
     #endregion
@@ -70,7 +70,6 @@ public class TTTGameControllerCore : MonoBehaviour
             gridTriggers[i].triggers.Add(entry);
         }
 
-        outcomeDecorator = GetComponent<OutcomeDecorator>();
         judger = GetComponent<Judger>();
 
         ResetGame();
@@ -210,7 +209,7 @@ public class TTTGameControllerCore : MonoBehaviour
 
         if (outcomeDecorator)
         {
-            state = outcomeDecorator.Apply(state, player.mark).First();
+            state = outcomeDecorator.Decorate(state, player.mark).First();
         }
 
         UpdateStateVisual();

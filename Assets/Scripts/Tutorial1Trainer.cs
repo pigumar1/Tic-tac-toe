@@ -6,7 +6,6 @@ using UnityEngine;
 public class Tutorial1Trainer : Trainer
 {
     //public Judger judger;
-    [SerializeField] OutcomeCandidateGen outcomeCandidateGen;
 
     // Start is called before the first frame update
     void Start()
@@ -62,7 +61,12 @@ public class Tutorial1Trainer : Trainer
         }
 
         agent1.Init(valueMatrixShape);
-        outcomeCandidateGen.outcomeDecorator = outcomeCandidateGen.gameObject.AddComponent<Tutorial1OutcomeDecorator>();
+
+        Tutorial1OutcomeDecorator newOutcomeDecorator = agent2.gameObject.AddComponent<Tutorial1OutcomeDecorator>();
+
+        newOutcomeDecorator.wrapped = agent2.outcomeCandidateGen;
+        agent2.outcomeCandidateGen = newOutcomeDecorator;
+        //outcomeCandidateGen.outcomeDecorator = outcomeCandidateGen.gameObject.AddComponent<Tutorial1OutcomeDecorator>();
 
         agent1.epsilon = 0.1;
         agent2.epsilon = 0.1;

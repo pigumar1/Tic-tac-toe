@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SkillOutcomeDecorator : CombatOutcomeDecorator
 {
-    public override List<int[]> Apply(int[] outcome, int mark)
+    public override List<int[]> Decorate(int[] outcome, int mark)
     {
-        List<int[]> oldOutcome = base.Apply(outcome, mark);
+        List<int[]> oldOutcome = base.Decorate(outcome, mark);
         List<int[]> result = new List<int[]>();
 
         foreach (int[] oc in oldOutcome)
@@ -24,7 +24,7 @@ public class SkillOutcomeDecorator : CombatOutcomeDecorator
                         ococ[11] = 5 - 1;
                         ococ[i] = mark;
 
-                        result.AddRange(base.Apply(ococ, mark));
+                        result.AddRange(base.Decorate(ococ, mark));
                     }
                 }
             }
